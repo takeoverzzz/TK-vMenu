@@ -22,6 +22,11 @@ namespace vMenuShared
             VCStaffChannel,
             #endregion
 			
+			// Client
+            #region PlayerTimeWeatherOptions
+            CLMenu,
+            #endregion
+			
             // Global
             #region global
             Everything,
@@ -684,9 +689,12 @@ namespace vMenuShared
                 case "WR":
                     prefix += "WorldRelated";
                     break;
-					case "VC":
+				case "VC":
                     prefix += "VoiceChat";
                     break;
+				case "CL":
+					prefix += "PlayerTimeWeatherOptions";
+					break;
                 default:
                     return prefix + name;
             }

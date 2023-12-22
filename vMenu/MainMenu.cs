@@ -30,6 +30,7 @@ namespace vMenuClient
         public static Menu PlayerSubmenu { get; private set; }
         public static Menu VehicleSubmenu { get; private set; }
         public static Menu WorldSubmenu { get; private set; }
+		public static Menu WeaponSubmenu { get; private set; }
 
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
         public static OnlinePlayers OnlinePlayersMenu { get; private set; }
@@ -656,6 +657,7 @@ namespace vMenuClient
             PlayerSubmenu = Lm.GetMenu(new Menu(Game.Player.Name, "Player Related Options"));
             VehicleSubmenu = Lm.GetMenu(new Menu(Game.Player.Name, "Vehicle Related Options"));
             WorldSubmenu = Lm.GetMenu(new Menu(Game.Player.Name, "World Options"));
+			WeaponSubmenu = Lm.GetMenu(new Menu(Game.Player.Name, "Weapon Related Options"));
 
             // Add the main menu to the menu pool.
             MenuController.AddMenu(Menu);
@@ -664,6 +666,7 @@ namespace vMenuClient
             MenuController.AddSubmenu(Menu, PlayerSubmenu);
             MenuController.AddSubmenu(Menu, VehicleSubmenu);
             MenuController.AddSubmenu(Menu, WorldSubmenu);
+			MenuController.AddSubmenu(Menu, WeaponSubmenu);
 
             // Create all (sub)menus.
             CreateSubmenus();
@@ -789,6 +792,12 @@ namespace vMenuClient
                 };
                 AddMenu(Menu, menu, button);
             }
+			
+			// Add a Spacer Here
+            var spacer1 = GetSpacerMenuItem("~b~↓ Online & Weapon Options ↓");
+            Menu.AddMenuItem(spacer1);
+			
+			
             if (IsAllowed(Permission.OPMenu))
             {
               
@@ -829,43 +838,41 @@ namespace vMenuClient
 
             var playerSubmenuBtn = new MenuItem("Player Related Options", "Open this submenu for player related subcategories.") { Label = "→→→" };
             Menu.AddMenuItem(playerSubmenuBtn);
+			
+			var weaponSubmenuBtn = new MenuItem("Weapon Related Options", "Open this submenu for Weapon related subcategories.") { Label = "→→→" };
+            Menu.AddMenuItem(weaponSubmenuBtn);
+			
+			// Add a Spacer Here
+            var spacer2 = GetSpacerMenuItem("~r~↓ Vehicle / Tele / Time & Weather Options ↓");
+            Menu.AddMenuItem(spacer2);
 
 
 
             var vehicleSubmenuBtn = new MenuItem("Vehicle Related Options", "Open this submenu for vehicle related subcategories.") { Label = "→→→" };
             Menu.AddMenuItem(vehicleSubmenuBtn);
+			
+			var worldSubmenuBtn = new MenuItem("World Related Options", "Open this submenu for world related subcategories.") { Label = "→→→" };
+            Menu.AddMenuItem(worldSubmenuBtn);
             // Add the vehicle options Menu.
-
-            var worldSubmenuBtn = new MenuItem("World Related Options", "Open this submenu for world related subcategories.") { Label = "→→→" };
-            if (GetSettingsBool(Setting.vmenu_enable_client_time_weather))
-            {
-                Menu.AddMenuItem(worldSubmenuBtn);
+			
+			
+		if (IsAllowed(Permission.CLMenu))
+           {
+                PlayerTimeWeatherOptionsMenu = new PlayerTimeWeatherOptions();
+                var menu2 = PlayerTimeWeatherOptionsMenu.GetMenu();
+                var button2 = new MenuItem("Time & Weather Options", "Change all time & weather related options here.")
                 {
-                    var menu2 = PlayerTimeWeatherOptionsMenu.GetMenu();
-                    var button2 = new MenuItem("Time & Weather Options", "Change all time & weather related options here.")
-                    {
-                        Label = "→→→"
-                    };
-                    AddMenu(Menu, menu2, button2);
-                }
+                    Label = "→→→"
+                };
+                AddMenu(Menu, menu2, button2);
             }
+            
             // Add Teleport Menu.
             if (IsAllowed(Permission.TPMenu))
             {
                 //TeleportOptionsMenu = new TeleportOptions();
                 var menu = TeleportOptionsMenu.GetMenu();
                 var button = new MenuItem("Teleport Related Options", "Open this submenu for teleport options.")
-                {
-                    Label = "→→→"
-                };
-                AddMenu(Menu, menu, button);
-            }
-
-
-
-            {
-                var menu = RecordingMenu.GetMenu();
-                var button = new MenuItem("Recording Options", "In-game recording options.")
                 {
                     Label = "→→→"
                 };
@@ -933,6 +940,34 @@ namespace vMenuClient
                     }
                 }   
             };
+			 Menu.OnIndexChange += (_menu, _oldItem, _newItem, _oldIndex, _newIndex) =>
+            {
+                if (spacer1 == _newItem)
+                {
+                    if (_oldIndex < _newIndex)
+                    {
+                    Menu.GoDown();
+                    }
+                    else
+                    {
+                    Menu.GoUp();
+                    }
+                }   
+            };
+			 Menu.OnIndexChange += (_menu, _oldItem, _newItem, _oldIndex, _newIndex) =>
+            {
+                if (spacer2 == _newItem)
+                {
+                    if (_oldIndex < _newIndex)
+                    {
+                    Menu.GoDown();
+                    }
+                    else
+                    {
+                    Menu.GoUp();
+                    }
+                }   
+            };
             Menu.OnMenuClose += (sender) =>
             {
                 if (MainMenu.MiscSettingsMenu.ResetIndex.Checked)
@@ -973,6 +1008,15 @@ namespace vMenuClient
             {
                 Menu.RemoveMenuItem(vehicleSubmenuBtn);
             }
+			
+			if (WeaponSubmenu.Size > 0)
+            {
+                MenuController.BindMenuItem(Menu, WeaponSubmenu, weaponSubmenuBtn);
+            }
+            else
+            {
+                Menu.RemoveMenuItem(weaponSubmenuBtn);
+            }
 
             if (WorldSubmenu.Size > 0)
             {
@@ -995,6 +1039,12 @@ namespace vMenuClient
         /// </summary>
         private static void CreateSubmenus()
         {
+			
+			// Add a Spacer Here
+            var spacer1 = GetSpacerMenuItem("~b~↓ Online & Weapon Options ↓");
+            Menu.AddMenuItem(spacer1);
+			
+			
             // Add the online players menu.
             if (IsAllowed(Permission.OPMenu))
             {
@@ -1037,6 +1087,9 @@ namespace vMenuClient
 
             var playerSubmenuBtn = new MenuItem("Player Related Options", "Open this submenu for player related subcategories.") { Label = "→→→" };
             Menu.AddMenuItem(playerSubmenuBtn);
+			
+			var weaponSubmenuBtn = new MenuItem("Weapon Related Options", "Open this submenu for Weapon related subcategories.") { Label = "→→→" };
+            Menu.AddMenuItem(weaponSubmenuBtn);
 
             // Add the player options menu.
             if (IsAllowed(Permission.POMenu))
@@ -1049,6 +1102,10 @@ namespace vMenuClient
                 };
                 AddMenu(PlayerSubmenu, menu, button);
             }
+			
+			// Add a Spacer Here
+            var spacer2 = GetSpacerMenuItem("~r~↓ Vehicle / Tele / Time & Weather Options ↓");
+            Menu.AddMenuItem(spacer2);
 
             var vehicleSubmenuBtn = new MenuItem("Vehicle Related Options", "Open this submenu for vehicle related subcategories.") { Label = "→→→" };
             Menu.AddMenuItem(vehicleSubmenuBtn);
@@ -1186,7 +1243,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(PlayerSubmenu, menu, button);
+                AddMenu(WeaponSubmenu, menu, button);
             }
 
             // Add Weapon Loadouts menu.
@@ -1198,7 +1255,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(PlayerSubmenu, menu, button);
+                AddMenu(WeaponSubmenu, menu, button);
             }
 
             if (IsAllowed(Permission.NoClip))
@@ -1214,6 +1271,7 @@ namespace vMenuClient
                 };
             }
 
+		if (IsAllowed(Permission.CLMenu))
             {
                 PlayerTimeWeatherOptionsMenu = new PlayerTimeWeatherOptions();
                 var menu2 = PlayerTimeWeatherOptionsMenu.GetMenu();
@@ -1237,7 +1295,11 @@ namespace vMenuClient
             }
 
 
-
+            // Add a Spacer Here
+            var spacer = GetSpacerMenuItem("~y~↓ Miscellaneous ↓");
+            Menu.AddMenuItem(spacer);
+			
+			
             {
                 RecordingMenu = new Recording();
                 var menu = RecordingMenu.GetMenu();
@@ -1247,10 +1309,6 @@ namespace vMenuClient
                 };
                 AddMenu(Menu, menu, button);
             }
-
-            // Add a Spacer Here
-            var spacer = GetSpacerMenuItem("~y~↓ Miscellaneous ↓");
-            Menu.AddMenuItem(spacer);
 
             // Add enhanced camera menu.
             if (IsAllowed(Permission.ECMenu))
@@ -1312,6 +1370,20 @@ namespace vMenuClient
                     }
                 }   
             };
+			Menu.OnIndexChange += (_menu, _oldItem, _newItem, _oldIndex, _newIndex) =>
+            {
+                if (spacer2 == _newItem)
+                {
+                    if (_oldIndex < _newIndex)
+                    {
+                    Menu.GoDown();
+                    }
+                    else
+                    {
+                    Menu.GoUp();
+                    }
+                }   
+            };
             Menu.OnMenuClose += (sender) =>
             {
                 if (MainMenu.MiscSettingsMenu.ResetIndex.Checked)
@@ -1356,6 +1428,15 @@ namespace vMenuClient
             else
             {
                 Menu.RemoveMenuItem(vehicleSubmenuBtn);
+            }
+			
+			if (WeaponSubmenu.Size > 0)
+            {
+                MenuController.BindMenuItem(Menu, WeaponSubmenu, weaponSubmenuBtn);
+            }
+            else
+            {
+                Menu.RemoveMenuItem(weaponSubmenuBtn);
             }
 
             if (WorldSubmenu.Size > 0)
