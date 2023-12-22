@@ -11,20 +11,22 @@ using Newtonsoft.Json;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 
-namespace vMenuClient
+namespace vMenuClient.menus
 {
     public class SavedVehicles
     {
         // Variables
         private Menu menu;
-        private Menu selectedVehicleMenu = new Menu("Manage Vehicle", "Manage this saved vehicle.");
-        private Menu unavailableVehiclesMenu = new Menu("Missing Vehicles", "Unavailable Saved Vehicles");
-        private Dictionary<string, VehicleInfo> savedVehicles = new Dictionary<string, VehicleInfo>();
-        private List<Menu> subMenus = new List<Menu>();
-        private Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>>();
-        private KeyValuePair<string, VehicleInfo> currentlySelectedVehicle = new KeyValuePair<string, VehicleInfo>();
+        private readonly Menu selectedVehicleMenu = Lm.GetMenu(new Menu("Manage Vehicle", "Manage this saved vehicle."));
+        private readonly Menu unavailableVehiclesMenu = Lm.GetMenu(new Menu("Missing Vehicles", "Unavailable Saved Vehicles"));
+        private Dictionary<string, VehicleInfo> savedVehicles = new();
+        private readonly List<Menu> subMenus = new();
+        private Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new();
+        private KeyValuePair<string, VehicleInfo> currentlySelectedVehicle = new();
         private int deleteButtonPressedCount = 0;
         private int replaceButtonPressedCount = 0;
+
+        private static readonly LanguageManager Lm = new LanguageManager();
 
         /// <summary>
         /// Creates the menu.
@@ -214,7 +216,7 @@ namespace vMenuClient
                     if (index < m.Size)
                     {
                         var item = m.GetMenuItems().Find(i => i.Index == index);
-                        if (item != null && (item.ItemData is KeyValuePair<string, VehicleInfo> sd))
+                        if (item != null && item.ItemData is KeyValuePair<string, VehicleInfo> sd)
                         {
                             if (item.Label == "~r~Are you sure?")
                             {
@@ -367,7 +369,7 @@ namespace vMenuClient
             }
             foreach (var m in subMenus)
             {
-                m.SortMenuItems((MenuItem A, MenuItem B) =>
+                m.SortMenuItems((A, B) =>
                 {
                     return A.Text.ToLower().CompareTo(B.Text.ToLower());
                 });

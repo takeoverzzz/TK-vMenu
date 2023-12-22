@@ -7,7 +7,7 @@
     <TargetName>$(AssemblyName)</TargetName>
     <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>CLIENT</DefineConstants>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedClasses\ConfigManager.cs" Link="ConfigManager.cs" />
@@ -15,7 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MenuAPI.FiveM" Version="3.2.2" />
+    
+    <Reference Include="MenuAPI">
+      <HintPath>..\dependencies\client\MenuAPI.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
 
     <Reference Include="Microsoft.CSharp" />
     
@@ -26,6 +30,8 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
       <Private>true</Private>
+  
+
     </Reference>
 
   </ItemGroup>
@@ -52,4 +58,12 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="if exist &quot;$(SolutionDir)\postbuild.cmd&quot; &quot;$(SolutionDir)postbuild.cmd&quot;" />
   </Target>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\tomgr\Documents\GitHub-Repos\vMenu\vMenu\vMenu\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\tomgr\Documents\GitHub-Repos\vMenu\vMenu\vMenu\.editorconfig" />
+  </ItemGroup>
 </Project>

@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
-using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
-using static CitizenFX.Core.Native.API;
-using static vMenuClient.CommonFunctions;
-using static vMenuShared.PermissionsManager;
+﻿using MenuAPI;
 
-namespace vMenuClient
+namespace vMenuClient.menus
 {
     public class About
     {
@@ -24,17 +13,17 @@ namespace vMenuClient
             menu = new Menu("vMenu", "About PF-vMenu");
 
             // Create menu items.
-            MenuItem version = new MenuItem("vMenu Version", $"This server is using vMenu ~b~~h~{MainMenu.Version}~h~~s~.")
+            var version = new MenuItem("PF-vMenu Version", $"This server is using PF-vMenu ~b~~h~{MainMenu.Version}~h~~s~. \n\nDownload PF-vMenu: ~b~~h~github.com/ProjectFairnessLabs/PF-vMenu~h~~s~")
             {
                 Label = $"~h~{MainMenu.Version}~h~"
             };
-            MenuItem credits = new MenuItem("About vMenu / Credits", "vMenu is made by ~b~Vespura~s~. Extra modifications are done by members of ~b~Project Fairness Labs~b~.");
+            var credits = new MenuItem("About vMenu / Credits", "vMenu is made by ~b~Vespura~s~. Extra modifications are done by members of ~b~Project Fairness Labs~b~.");
 
-            string serverInfoMessage = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_message);
+            var serverInfoMessage = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_message);
             if (!string.IsNullOrEmpty(serverInfoMessage))
             {
-                MenuItem serverInfo = new MenuItem("Server Info", serverInfoMessage);
-                string siteUrl = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_website_url);
+                var serverInfo = new MenuItem("Server Info", serverInfoMessage);
+                var siteUrl = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_website_url);
                 if (!string.IsNullOrEmpty(siteUrl))
                 {
                     serverInfo.Label = $"{siteUrl}";

@@ -26,14 +26,16 @@ namespace vMenuClient
         public List<string> weatherListData = new List<string>() { "Clear", "ExtraSunny", "Clouds", "Overcast", "Rain", "Clearing", "Thunder", "Smog", "Foggy", "Xmas", "Snowlight", "Blizzard", "Snow", "Halloween", "Neutral" };
         public MenuListItem weatherList;
 
+        public bool ClientWeatherTimeBool;
+
         /// <summary>
         /// Creates the menu.
         /// </summary>
         private void CreateMenu()
         {
-            menu = new Menu("Time & Weather Options", "Time & Weather Options");
+            menu = new Menu("Time & Weather", "Time & Weather Options");
 
-            clientSidedEnabled = new MenuCheckboxItem("Client-Sided Time & Weather", "Enable or disable client-sided time and weather changes.", false);
+            clientSidedEnabled = new MenuCheckboxItem("Client-Sided Time & Weather", "Enable or disable client-sided time and weather changes. \n\nPlease do note that this menu will be revamped in a future update, to replicate the World Related Options menu.", false);
             menu.AddMenuItem(clientSidedEnabled);
 
             List<string> timeData = new List<string>();
@@ -46,6 +48,16 @@ namespace vMenuClient
 
             weatherList = new MenuListItem("Change Weather", weatherListData, 0, "Select weather.");
             menu.AddMenuItem(weatherList);
+
+
+
+            menu.OnCheckboxChange += (_menu, _item, _index, _checked) => {
+                if (_item == clientSidedEnabled)
+                {
+                    //Debug.WriteLine($"{_checked}");
+                    ClientWeatherTimeBool = _checked;
+                }
+            };
         }
 
         /// <summary>

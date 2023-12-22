@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CitizenFX.Core;
+﻿using System.Collections.Generic;
+
 using static CitizenFX.Core.Native.API;
 
-namespace vMenuClient
+namespace vMenuClient.data
 {
     public static class VehicleData
     {
-        public struct VehicleColor
+        public readonly struct VehicleColor
         {
             public readonly int id;
             public readonly string label;
@@ -19,23 +15,23 @@ namespace vMenuClient
             {
                 if (label == "veh_color_taxi_yellow")
                 {
-                    if (CitizenFX.Core.Native.API.GetLabelText("veh_color_taxi_yellow") == "NULL")
+                    if (GetLabelText("veh_color_taxi_yellow") == "NULL")
                     {
-                        CitizenFX.Core.Native.API.AddTextEntry("veh_color_taxi_yellow", $"Taxi {CitizenFX.Core.Native.API.GetLabelText("IEC_T20_2")}");
+                        AddTextEntry("veh_color_taxi_yellow", $"Taxi {GetLabelText("IEC_T20_2")}");
                     }
                 }
                 else if (label == "veh_color_off_white")
                 {
-                    if (CitizenFX.Core.Native.API.GetLabelText("veh_color_off_white") == "NULL")
+                    if (GetLabelText("veh_color_off_white") == "NULL")
                     {
-                        CitizenFX.Core.Native.API.AddTextEntry("veh_color_off_white", "Off White");
+                        AddTextEntry("veh_color_off_white", "Off White");
                     }
                 }
                 else if (label == "VERY_DARK_BLUE")
                 {
-                    if (CitizenFX.Core.Native.API.GetLabelText("VERY_DARK_BLUE") == "NULL")
+                    if (GetLabelText("VERY_DARK_BLUE") == "NULL")
                     {
-                        CitizenFX.Core.Native.API.AddTextEntry("VERY_DARK_BLUE", "Very Dark Blue");
+                        AddTextEntry("VERY_DARK_BLUE", "Very Dark Blue");
                     }
                 }
 
@@ -44,7 +40,7 @@ namespace vMenuClient
             }
         }
 
-        public static readonly List<VehicleColor> ClassicColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> ClassicColors = new()
         {
             new VehicleColor(0, "BLACK"),
             new VehicleColor(1, "GRAPHITE"),
@@ -134,7 +130,7 @@ namespace vMenuClient
             new VehicleColor(150, "LAVA_RED"),
         };
 
-        public static readonly List<VehicleColor> MatteColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> MatteColors = new()
         {
             new VehicleColor(12, "BLACK"),
             new VehicleColor(13, "GREY"),
@@ -163,17 +159,17 @@ namespace vMenuClient
             new VehicleColor(155, "MATTE_FOIL"),
         };
 
-        public static readonly List<VehicleColor> MetalColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> MetalColors = new()
         {
             new VehicleColor(117, "BR_STEEL"),
             new VehicleColor(118, "BR BLACK_STEEL"),
             new VehicleColor(119, "BR_ALUMINIUM"),
-
+            new VehicleColor(120, "CHROME"),
             new VehicleColor(158, "GOLD_P"),
             new VehicleColor(159, "GOLD_S"),
         };
 
-        public static readonly List<VehicleColor> UtilColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> UtilColors = new()
         {
             new VehicleColor(15, "BLACK"),
             new VehicleColor(16, "FMMC_COL1_1"),
@@ -221,7 +217,7 @@ namespace vMenuClient
             new VehicleColor(160, "YELLOW")
         };
 
-        public static readonly List<VehicleColor> WornColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> WornColors = new()
         {
             new VehicleColor(21, "BLACK"),
             new VehicleColor(22, "GRAPHITE"),
@@ -261,7 +257,7 @@ namespace vMenuClient
             new VehicleColor(133, "OLIVE_GREEN"),
         };
 
-        public static readonly List<VehicleColor> ChameleonColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> ChameleonColors = new()
         {
             new VehicleColor(161, "ANOD_RED"),
             new VehicleColor(162, "ANOD_WINE"),
@@ -489,13 +485,16 @@ namespace vMenuClient
             public static List<string> Muscle { get; } = new List<string>()
             {
                 "BLADE",
+                "BRIGHAM",  // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "BROADWAY", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
                 "BUCCANEER",
                 "BUCCANEER2",
                 "BUFFALO4", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
+                "BUFFALO5", // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "CHINO",
                 "CHINO2",
                 "CLIQUE",
+                "CLIQUE2", // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "COQUETTE3",
                 "DEVIANT",
                 "DOMINATOR",
@@ -644,6 +643,7 @@ namespace vMenuClient
                 "COQUETTE",
                 "COQUETTE4", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "CORSITA", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
+                "COUREUR",  // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DRAFTER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "ELEGY",
@@ -656,6 +656,7 @@ namespace vMenuClient
                 "FUSILADE",
                 "FUTO",
                 "FUTO2", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "GAUNTLET6",  // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "GB200",
                 "GROWLER", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "HOTRING",
@@ -708,6 +709,7 @@ namespace vMenuClient
                 "SM722", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699 
                 "SPECTER",
                 "SPECTER2",
+                "STINGERTT",  // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "SUGOI", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "SULTAN",
                 "SULTAN2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
@@ -888,6 +890,7 @@ namespace vMenuClient
                 "INSURGENT3",
                 "KALAHARI",
                 "KAMACHO",
+                "L35", // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "MARSHALL",
                 "MENACER",
                 "MESA3",
@@ -895,11 +898,13 @@ namespace vMenuClient
                 "MONSTER3",
                 "MONSTER4",
                 "MONSTER5",
+                "MONSTROCITI",  // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "NIGHTSHARK",
                 "OUTLAW", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "PATRIOT3", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "RANCHERXL",
                 "RANCHERXL2",
+                "RATEL",  // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "RCBANDITO",
                 "REBEL",
                 "REBEL2",
@@ -1028,6 +1033,7 @@ namespace vMenuClient
                 "SPEEDO",
                 "SPEEDO2",
                 "SPEEDO4",
+                "SPEEDO5", // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "SURFER",
                 "SURFER2",
                 "SURFER3", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
@@ -1044,6 +1050,8 @@ namespace vMenuClient
                 "BMX",
                 "CRUISER",
                 "FIXTER",
+                "INDUCTOR", // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
+                "INDUCTOR2", // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "SCORCHER",
                 "TRIBIKE",
                 "TRIBIKE2",
@@ -1094,6 +1102,7 @@ namespace vMenuClient
                 "CARGOBOB3",
                 "CARGOBOB4",
                 "CONADA", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
+                "CONADA2", // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "FROGGER",
                 "FROGGER2",
                 "HAVOK",
@@ -1121,6 +1130,8 @@ namespace vMenuClient
                 "ALPHAZ1",
                 "AVENGER",
                 "AVENGER2",
+                "AVENGER3",  // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
+                "AVENGER4",
                 "BESRA",
                 "BLIMP",
                 "BLIMP2",
@@ -1144,10 +1155,12 @@ namespace vMenuClient
                 "NIMBUS",
                 "NOKOTA",
                 "PYRO",
+                "RAIJU",  // SAN ANDREAS MERCENARIES (MP2023_01) DLC - Requires b2944
                 "ROGUE",
                 "SEABREEZE",
                 "SHAMAL",
                 "STARLING",
+                "STREAMER216",
                 "STRIKEFORCE",
                 "STUNT",
                 "TITAN",
@@ -1330,7 +1343,7 @@ namespace vMenuClient
 
             public static string[] GetAllVehicles()
             {
-                List<string> vehs = new List<string>();
+                var vehs = new List<string>();
                 foreach (var vc in VehicleClasses)
                 {
                     foreach (var c in vc.Value)

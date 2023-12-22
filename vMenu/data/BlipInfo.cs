@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
-using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
-using static CitizenFX.Core.Native.API;
-using static vMenuClient.CommonFunctions;
+﻿﻿using System.Collections.Generic;
 
-namespace vMenuClient
+using Newtonsoft.Json;
+
+using static CitizenFX.Core.Native.API;
+
+namespace vMenuClient.data
 {
     public static class BlipInfo
     {
         public static int GetBlipSpriteForVehicle(int vehicle)
         {
-            uint model = (uint)GetEntityModel(vehicle);
-            Dictionary<uint, int> sprites = new Dictionary<uint, int>()
+            var model = (uint)GetEntityModel(vehicle);
+            var sprites = new Dictionary<uint, int>()
             {
                 { (uint)GetHashKey("taxi"), 56 },
                 //
@@ -50,7 +44,6 @@ namespace vMenuClient
                 //
                 { (uint)GetHashKey("apc"), 558 },
                 { (uint)GetHashKey("oppressor"), 559 },
-                { (uint)GetHashKey("oppressor2"), 559 },
                 { (uint)GetHashKey("halftrack"), 560 },
                 { (uint)GetHashKey("dune3"), 561 },
                 { (uint)GetHashKey("tampa3"), 562 },
@@ -72,6 +65,7 @@ namespace vMenuClient
                 { (uint)GetHashKey("tula"), 585 },
                 //
                 { (uint)GetHashKey("avenger"), 589 },
+                { (uint)GetHashKey("avenger2"), 589 },
                 //
                 { (uint)GetHashKey("stromberg"), 595 },
                 { (uint)GetHashKey("deluxo"), 596 },
@@ -82,7 +76,103 @@ namespace vMenuClient
                 { (uint)GetHashKey("barrage"), 601 },
                 { (uint)GetHashKey("akula"), 602 },
                 { (uint)GetHashKey("chernobog"), 603 },
+                //
+                { (uint)GetHashKey("seasparrow"), 612 },
+                { (uint)GetHashKey("caracara"), 613 },
+                //
+                { (uint)GetHashKey("pbus2"), 631 },
+                { (uint)GetHashKey("terbyte"), 632 },
+                { (uint)GetHashKey("menacer"), 633 },
+                { (uint)GetHashKey("scramjet"), 634 },
+                { (uint)GetHashKey("pounder2"), 635 },
+                { (uint)GetHashKey("mule4"), 636 },
+                { (uint)GetHashKey("speedo4"), 637 },
+                { (uint)GetHashKey("blimp3"), 638 },
+                { (uint)GetHashKey("oppressor2"), 639 },
+                { (uint)GetHashKey("strikeforce"), 640 },
+                //
+                { (uint)GetHashKey("bruiser"), 658 },
+                { (uint)GetHashKey("bruiser2"), 658 },
+                { (uint)GetHashKey("bruiser3"), 658 },
+                { (uint)GetHashKey("brutus"), 659 },
+                { (uint)GetHashKey("brutus2"), 659 },
+                { (uint)GetHashKey("brutus3"), 659 },
+                { (uint)GetHashKey("cerberus"), 660 },
+                { (uint)GetHashKey("cerberus2"), 660 },
+                { (uint)GetHashKey("cerberus3"), 660 },                
+                { (uint)GetHashKey("deathbike"), 661 },
+                { (uint)GetHashKey("deathbike2"), 661 },
+                { (uint)GetHashKey("deathbike3"), 661 },                
+                { (uint)GetHashKey("dominator4"), 662 },
+                { (uint)GetHashKey("dominator5"), 662 },
+                { (uint)GetHashKey("dominator6"), 662 },
+                { (uint)GetHashKey("impaler2"), 663 },
+                { (uint)GetHashKey("impaler3"), 663 },
+                { (uint)GetHashKey("impaler4"), 663 },
+                { (uint)GetHashKey("imperator"), 664 },
+                { (uint)GetHashKey("imperator2"), 664 },
+                { (uint)GetHashKey("imperator3"), 664 },
+                { (uint)GetHashKey("issi4"), 665 },
+                { (uint)GetHashKey("issi5"), 665 },
+                { (uint)GetHashKey("issi6"), 665 },
+                { (uint)GetHashKey("monster3"), 666 },
+                { (uint)GetHashKey("monster4"), 666 },
+                { (uint)GetHashKey("monster5"), 666 },
+                { (uint)GetHashKey("scarab"), 667 },
+                { (uint)GetHashKey("scarab2"), 667 },
+                { (uint)GetHashKey("scarab3"), 667 },
+                { (uint)GetHashKey("slamvan4"), 668 },
+                { (uint)GetHashKey("slamvan5"), 668 },
+                { (uint)GetHashKey("slamvan6"), 668 },
+                { (uint)GetHashKey("zr380"), 669 },
+                { (uint)GetHashKey("zr3802"), 669 },
+                { (uint)GetHashKey("zr3803"), 669 },
+                //
+                { (uint)GetHashKey("everon"), 734 },
+                { (uint)GetHashKey("outlaw"), 735 },
+                { (uint)GetHashKey("vagrant"), 736 },
+                { (uint)GetHashKey("zhaba"), 737 },
+                { (uint)GetHashKey("minitank"), 742 },
+                //
+                { (uint)GetHashKey("winky"), 745 },
+                { (uint)GetHashKey("avisa"), 746 },
+                { (uint)GetHashKey("veto"), 747 },
+                { (uint)GetHashKey("veto2"), 748 },
+                { (uint)GetHashKey("verus"), 749 },
+                { (uint)GetHashKey("vetir"), 750 },
+                { (uint)GetHashKey("seasparrow2"), 753 },
+                { (uint)GetHashKey("seasparrow3"), 753 },
+                { (uint)GetHashKey("dinghy5"), 754 },
+                { (uint)GetHashKey("patrolboat"), 755 },
+                { (uint)GetHashKey("toreador"), 756 },
+                { (uint)GetHashKey("squaddie"), 757 },
+                { (uint)GetHashKey("alkonost"), 758 },
+                { (uint)GetHashKey("annihilator2"), 759 },
+                { (uint)GetHashKey("kosatka"), 760 },
+                //
+                { (uint)GetHashKey("patriot3"), 818 },
+                { (uint)GetHashKey("jubilee"), 820 },
+                { (uint)GetHashKey("granger2"), 821 },
+                { (uint)GetHashKey("deity"), 823 },
+                { (uint)GetHashKey("champion"), 824 },
+                { (uint)GetHashKey("buffalo4"), 825 },
+                //
+                { (uint)GetHashKey("avenger3"), 589 },
+                { (uint)GetHashKey("avenger4"), 589 },
+                { (uint)GetHashKey("raiju"), 861 },
+                { (uint)GetHashKey("conada2"), 862 },
+                { (uint)GetHashKey("streamer216"), 865 },
             };
+
+            string jsonData = LoadResourceFile(GetCurrentResourceName(), "config/vehblips.json") ?? "{}";
+            var vehblips = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, int>>>(jsonData);
+
+            foreach (var blips in vehblips["vehblips"])
+            {
+                    uint veh = (uint)GetHashKey(blips.Key);
+                    sprites[veh] = blips.Value;
+            }
+
 
             if (sprites.ContainsKey(model))
             {

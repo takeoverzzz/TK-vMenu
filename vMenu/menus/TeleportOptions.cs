@@ -30,21 +30,21 @@ namespace vMenuClient
 
             menu = new Menu("Teleport Options", "Teleport Related Options");
             // menu items
-            Menu teleportMenu = new Menu("Teleport Locations", "Teleport Locations");
-            MenuItem teleportMenuBtn = new MenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
+            var teleportMenu = new Menu("Teleport Locations", "Teleport Locations");
+            var teleportMenuBtn = new MenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
             MenuController.AddSubmenu(menu, teleportMenu);
             MenuController.BindMenuItem(menu, teleportMenu, teleportMenuBtn);
 
             // Keybind settings menu items
-            MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
-            MenuItem backBtn = new MenuItem("Back");
+            var kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
+            var backBtn = new MenuItem("Back");
 
             // Teleportation options
-            if (IsAllowed(Permission.MSTeleportToWp) || IsAllowed(Permission.MSTeleportLocations) || IsAllowed(Permission.MSTeleportToCoord))
+            if (IsAllowed(Permission.TPTeleportToWp) || IsAllowed(Permission.TPTeleportLocations) || IsAllowed(Permission.TPTeleportToCoord))
             {
-                MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
-                MenuItem tpToCoord = new MenuItem("Teleport To Coords", "Enter the X, Y, Z coordinates and you will be teleported to that location.");
-                MenuItem saveLocationBtn = new MenuItem("Save Teleport Location", "Adds your current location to the teleport locations menu and saves it on the server.");
+                var tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
+                var tpToCoord = new MenuItem("Teleport To Coords", "Enter the X, Y, Z coordinates and you will be teleported to that location.");
+                var saveLocationBtn = new MenuItem("Save Teleport Location", "Adds your current location to the teleport locations menu and saves it on the server.");
                 menu.OnItemSelect += async (sender, item, index) =>
                 {
                     // Teleport to waypoint.
@@ -54,34 +54,30 @@ namespace vMenuClient
                     }
                     else if (item == tpToCoord)
                     {
-                        string x = await GetUserInput("Enter X coordinate.");
+                        var x = await GetUserInput("Enter X coordinate.");
                         if (string.IsNullOrEmpty(x))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
                             return;
                         }
-                        string y = await GetUserInput("Enter Y coordinate.");
+                        var y = await GetUserInput("Enter Y coordinate.");
                         if (string.IsNullOrEmpty(y))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
                             return;
                         }
-                        string z = await GetUserInput("Enter Z coordinate.");
+                        var z = await GetUserInput("Enter Z coordinate.");
                         if (string.IsNullOrEmpty(z))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
                             return;
                         }
 
-                        float posX = 0f;
-                        float posY = 0f;
-                        float posZ = 0f;
-
-                        if (!float.TryParse(x, out posX))
+                        if (!float.TryParse(x, out var posX))
                         {
-                            if (int.TryParse(x, out int intX))
+                            if (int.TryParse(x, out var intX))
                             {
-                                posX = (float)intX;
+                                posX = intX;
                             }
                             else
                             {
@@ -89,11 +85,11 @@ namespace vMenuClient
                                 return;
                             }
                         }
-                        if (!float.TryParse(y, out posY))
+                        if (!float.TryParse(y, out var posY))
                         {
-                            if (int.TryParse(y, out int intY))
+                            if (int.TryParse(y, out var intY))
                             {
-                                posY = (float)intY;
+                                posY = intY;
                             }
                             else
                             {
@@ -101,11 +97,11 @@ namespace vMenuClient
                                 return;
                             }
                         }
-                        if (!float.TryParse(z, out posZ))
+                        if (!float.TryParse(z, out var posZ))
                         {
-                            if (int.TryParse(z, out int intZ))
+                            if (int.TryParse(z, out var intZ))
                             {
-                                posZ = (float)intZ;
+                                posZ = intZ;
                             }
                             else
                             {
@@ -122,15 +118,15 @@ namespace vMenuClient
                     }
                 };
 
-                if (IsAllowed(Permission.MSTeleportToWp))
+                if (IsAllowed(Permission.TPTeleportToWp))
                 {
                     menu.AddMenuItem(tptowp);
                 }
-                if (IsAllowed(Permission.MSTeleportToCoord))
+                if (IsAllowed(Permission.TPTeleportToCoord))
                 {
                     menu.AddMenuItem(tpToCoord);
                 }
-                if (IsAllowed(Permission.MSTeleportLocations))
+                if (IsAllowed(Permission.TPTeleportLocations))
                 {
                     menu.AddMenuItem(teleportMenuBtn);
 
@@ -149,7 +145,7 @@ namespace vMenuClient
                                 var y = Math.Round(location.coordinates.Y, 2);
                                 var z = Math.Round(location.coordinates.Z, 2);
                                 var heading = Math.Round(location.heading, 2);
-                                MenuItem tpBtn = new MenuItem(location.name, $"Teleport to ~y~{location.name}~n~~s~x: ~y~{x}~n~~s~y: ~y~{y}~n~~s~z: ~y~{z}~n~~s~heading: ~y~{heading}") { ItemData = location };
+                                var tpBtn = new MenuItem(location.name, $"Teleport to ~y~{location.name}~n~~s~x: ~y~{x}~n~~s~y: ~y~{y}~n~~s~z: ~y~{z}~n~~s~heading: ~y~{heading}") { ItemData = location };
                                 teleportMenu.AddMenuItem(tpBtn);
                             }
                         }
@@ -165,7 +161,7 @@ namespace vMenuClient
                         }
                     };
 
-                    if (IsAllowed(Permission.MSTeleportSaveLocation))
+                    if (IsAllowed(Permission.TPTeleportSaveLocation))
                     {
                         menu.AddMenuItem(saveLocationBtn);
                     };
