@@ -1,5 +1,5 @@
 # TK-vMenu
-The vMenu for Project Fairness and other affiliated servers. All actions are subject to change.
+The vMenu for takeoverz framework and other affiliated servers. All actions are subject to change.
 
 # Description
 The original vMenu was lacking on options and new content. I made this version as a way for people to still get the latest updates, while of course, adding new things so it feels more like the vMenu on other servers (such as RSM, Impulse99, etc) while also improving upon the original.
