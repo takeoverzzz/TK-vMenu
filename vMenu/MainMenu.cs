@@ -1398,7 +1398,7 @@ namespace vMenuClient
             // Add About Menu.
             AboutMenu = new About();
             var sub = AboutMenu.GetMenu();
-            var btn = new MenuItem("About vMenu", "Information about vMenu.")
+            var btn = new MenuItem("About TK-vMenu", "Information about vMenu.")
             {
                 Label = "→→→"
             };

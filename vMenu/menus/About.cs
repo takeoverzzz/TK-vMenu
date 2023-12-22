@@ -13,11 +13,13 @@ namespace vMenuClient.menus
             menu = new Menu("vMenu", "About TK-vMenu");
 
             // Create menu items.
-            var version = new MenuItem("TK-vMenu Version", $"This server is using TK-vMenu ~b~~h~{MainMenu.Version}~h~~s~. \n\nDownload TK-vMenu: ~b~~h~github.com/takeoverzzz/TK-vMenu~h~~s~")
+            var version = new MenuItem("TK-vMenu Version", $"This server is using TK-vMenu ~b~~h~{MainMenu.Version}~h~~s~.")
             {
                 Label = $"~h~{MainMenu.Version}~h~"
             };
-            var credits = new MenuItem("About vMenu / Credits", "vMenu is made by ~b~Vespura~s~. Extra modifications are done by members of TK Labs");
+            var Github = new MenuItem("~r~~h~TK-vMenu Github Download~h~~r~", "\n\nDownload TK-vMenu: ~p~~h~github.com/takeoverzzz/TK-vMenu~h~~s~");
+			
+			var TKLABSDX = new MenuItem("~r~~h~TK-vMenu Discord Link *FOR SUPPORT*~h~~r~", "\n\n~r~~h~https://discord.gg/EchnCe4gBb~h~~r~");
 
             var serverInfoMessage = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_message);
             if (!string.IsNullOrEmpty(serverInfoMessage))
@@ -31,7 +33,8 @@ namespace vMenuClient.menus
                 menu.AddMenuItem(serverInfo);
             }
             menu.AddMenuItem(version);
-            menu.AddMenuItem(credits);
+			menu.AddMenuItem(Github);
+			menu.AddMenuItem(TKLABSDX);
         }
 
         /// <summary>
