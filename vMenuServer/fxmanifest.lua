@@ -6,7 +6,7 @@ games {'gta5'}
 -- Resource stuff
 name 'PF-vMenu'
 description 'A fork of vMenu, a server sided menu for FiveM with custom permissions.'
-version 'v1.1.3'
+version 'v1.1.4'
 author 'PF Team/Tom Grobbe'
 url 'https://github.com/ProjectFairnessLabs/PF-vMenu/'
 ui_page 'storage.html'
@@ -31,9 +31,16 @@ files {
     'MenuAPI.dll',
     'config/*.json',
     'config/languages/*.json',
-    'storage.html'
+    'config/locations/*.json',
+    'storage.html',
+    'plates/*.png'
 }
 client_script {'plugin-config.lua', 'plugins/***/*.lua', 'plugins/*.lua'}
 
+
 client_script 'vMenuClient.net.dll'
 server_script 'vMenuServer.net.dll'
+exports {
+"PluginAddMenuItem",
+"PluginMenuItem"
+}

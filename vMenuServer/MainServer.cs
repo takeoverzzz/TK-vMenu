@@ -188,12 +188,35 @@ namespace vMenuServer
         /// </summary>
         public MainServer()
         {
-            // name check
-            Debug.WriteLine($"Server ID: {GetSettingsString(Setting.vmenu_individual_server_id)}");
+        var gamebuild = 2372;
+        var gamebuildcurr = GetConvarInt("sv_enforcegamebuild", 0);
+        // build check
+        if (gamebuildcurr < gamebuild)
+        {
+            var InvalidGameBuild = new Exception($"\r\n\r\n^1 Wrong game build! Your server's game build is v{gamebuildcurr}! You need atleast the v{gamebuild} or later game builds to use PF-vMenu. Tutorial on how to change this: https://forum.cfx.re/t/tutorial-forcing-gamebuilds-on-fivem/4784977\r\n\r\n\r\n^7");
+            try
+            {
+                throw InvalidGameBuild;
+            }
+            catch (Exception e)
+            {
+                for (int i = 0; i < 5; i++) 
+                {
+                    Debug.Write(e.Message);
+                    System.Threading.Thread.Sleep(5000);
+                
+                }    
+                return;               
+            }
+        }
+        else
+        {
+            Debug.WriteLine($"Game build is: v{gamebuildcurr}");
+            // id check
             if (GetSettingsString(Setting.vmenu_individual_server_id) == "" || GetSettingsString(Setting.vmenu_individual_server_id) == null || GetSettingsString(Setting.vmenu_individual_server_id) == "null")
             {
-                var InvalidServerId = new Exception("\r\n\r\n^1 Invalid Server Id! change or add 'setr vmenu_individual_server_id' to your server cfg or permission cfg \r\n\r\n\r\n^7");
-                try
+                    var InvalidServerId = new Exception("\r\n\r\n^1 Invalid Server ID or Server ID not found! Change or add 'setr vmenu_individual_server_id' to your server.cfg or permissions.cfg. \r\n\r\n\r\n^7");
+                    try
                 {
                     throw InvalidServerId;
                 }
@@ -210,6 +233,7 @@ namespace vMenuServer
             }
             else
             {
+            Debug.WriteLine($"Server ID: {GetSettingsString(Setting.vmenu_individual_server_id)}");
             if (GetCurrentResourceName() != "vMenu")
             {
                 var InvalidNameException = new Exception("\r\n\r\n^1[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. " +
@@ -309,6 +333,7 @@ namespace vMenuServer
                 }
             }
         }
+    }
         }
         #endregion
 
@@ -567,6 +592,25 @@ namespace vMenuServer
         /// <param name="source"></param>
         /// <param name="vehicleNetId"></param>
         /// <param name="playerOwner"></param>
+        [EventHandler("vMenu:DelAllVehServ")]
+        public void DelAllVehServ([FromSource] Player source)
+        {     
+            var vehdelnum = 0;
+            foreach (int veh in GetAllVehicles())
+            {
+                if (!IsPedAPlayer(GetPedInVehicleSeat(veh, -1)))
+                {
+                    vehdelnum ++;
+                    DeleteEntity(veh);
+                }
+            }
+            if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.pfvmenu_moshnotify_setting))
+            {
+                source.TriggerEvent("mosh_notify:notify", "SUCCESS", $"<span class=\"text-white\">{vehdelnum} Vehicles Have Been Deleted!</span>", "success", "success", 5000);
+            }
+            source.TriggerEvent("vMenu:Notify", $"{vehdelnum} Vehicles Have Been Deleted!.", "success");
+
+        }
         [EventHandler("vMenu:GetOutOfCar")]
         internal void GetOutOfCar([FromSource] Player source, int vehicleNetId, int playerOwner)
         {
@@ -575,7 +619,7 @@ namespace vMenuServer
                 if (vMenuShared.PermissionsManager.GetPermissionAndParentPermissions(vMenuShared.PermissionsManager.Permission.PVKickPassengers).Any(perm => vMenuShared.PermissionsManager.IsAllowed(perm, source)))
                 {
                     TriggerClientEvent("vMenu:GetOutOfCar", vehicleNetId, playerOwner);
-                    source.TriggerEvent("vMenu:Notify", "All passengers will be kicked out as soon as the vehicle stops moving, or after 10 seconds if they refuse to stop the vehicle.");
+                    source.TriggerEvent("vMenu:Notify", "All passengers will be kicked out as soon as the vehicle stops moving, or after 10 seconds if they refuse to stop the vehicle.", "info");
                 }
             }
         }
@@ -817,17 +861,17 @@ namespace vMenuServer
                         TriggerEvent("vMenu:KickSuccessful", source.Name, kickReason, targetPlayer.Name);
 
                         KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
-                        TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: $"The target player (<C>{targetPlayer.Name}</C>) has been kicked.");
+                        TriggerClientEvent( source,  "vMenu:Notify",  $"The target player (<C>{targetPlayer.Name}</C>) has been kicked.", "info");
 
                         // Kick the player from the server using the specified reason.
                         DropPlayer(targetPlayer.Handle, kickReason);
                         return;
                     }
                     // Trigger the client event on the source player to let them know that kicking this player is not allowed.
-                    TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "Sorry, this player can ~r~not ~w~be kicked.");
+                    TriggerClientEvent(source, "vMenu:Notify", "Sorry, this player can ~r~not ~w~be kicked.", "info");
                     return;
                 }
-                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
+                TriggerClientEvent(source,  "vMenu:Notify", "An unknown error occurred. Report it here: vespura.com/vmenu", "info");
             }
             else
             {
@@ -853,7 +897,7 @@ namespace vMenuServer
                     TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe", args: source.Name);
                     return;
                 }
-                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
+                TriggerClientEvent( source, "vMenu:Notify", "An unknown error occurred. Report it here: vespura.com/vmenu", "info");
             }
             else
             {
@@ -879,7 +923,7 @@ namespace vMenuServer
                     TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
                     return;
                 }
-                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
+                TriggerClientEvent( source, "vMenu:Notify", "An unknown error occurred. Report it here: vespura.com/vmenu", "info");
             }
             else
             {
@@ -901,7 +945,7 @@ namespace vMenuServer
                     {
                         if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.OPSeePrivateMessages, p))
                         {
-                            p.TriggerEvent("vMenu:Notify", $"[vMenu Staff Log] <C>{source.Name}</C>~s~ sent a PM to <C>{targetPlayer.Name}</C>~s~: {message}");
+                            p.TriggerEvent("vMenu:Notify", $"[vMenu Staff Log] <C>{source.Name}</C>~s~ sent a PM to <C>{targetPlayer.Name}</C>~s~: {message}", "");
                         }
                     }
                 }
@@ -912,7 +956,7 @@ namespace vMenuServer
         internal void NotifySenderThatDmsAreDisabled([FromSource] Player source, string senderServerId)
         {
             var p = Players[int.Parse(senderServerId)];
-            p?.TriggerEvent("vMenu:Notify", $"Sorry, your private message to <C>{source.Name}</C>~s~ could not be delivered because they disabled private messages.");
+            p?.TriggerEvent("vMenu:Notify", $"Sorry, your private message to <C>{source.Name}</C>~s~ could not be delivered because they disabled private messages.", "info");
         }
         #endregion
 
@@ -944,21 +988,23 @@ namespace vMenuServer
 
         #region Add teleport location
         [EventHandler("vMenu:SaveTeleportLocation")]
-        internal void AddTeleportLocation([FromSource] Player _, string locationJson)
+        internal void AddTeleportLocation([FromSource] Player _, string locationJson, string jsonname)
         {
             var location = JsonConvert.DeserializeObject<TeleportLocation>(locationJson);
-            if (GetTeleportLocationsData().Any(loc => loc.name == location.name))
+            var jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/locations/" + jsonname);
+            var locs = JsonConvert.DeserializeObject<vMenuShared.ConfigManager.Locationsteleport>(jsonFile);
+            if (locs.teleports.Any(loc => loc.name == location.name))
             {
                 Log("A teleport location with this name already exists, location was not saved.", LogLevel.error);
                 return;
             }
-            var locs = GetLocations();
+
+            //var locs = GetLocations();
             locs.teleports.Add(location);
-            if (!SaveResourceFile(GetCurrentResourceName(), "config/locations.json", JsonConvert.SerializeObject(locs, Formatting.Indented), -1))
+            if (!SaveResourceFile(GetCurrentResourceName(), "config/locations/" + jsonname, JsonConvert.SerializeObject(locs, Formatting.Indented), -1))
             {
-                Log("Could not save locations.json file, reason unknown.", LogLevel.error);
+                Log($"Could not save {jsonname} file, reason unknown.", LogLevel.error);
             }
-            TriggerClientEvent("vMenu:UpdateTeleportLocations", JsonConvert.SerializeObject(locs.teleports));
         }
         #endregion
 

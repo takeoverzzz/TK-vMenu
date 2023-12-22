@@ -33,7 +33,7 @@ namespace vMenuClient
     /// <summary>
     /// Gets the formatted error message.
     /// </summary>
-    public static class ErrorMessage
+    public static class ErrorMessage 
     {
         /// <summary>
         /// Returns the formatted error message for the specified error type.
@@ -73,7 +73,7 @@ namespace vMenuClient
     /// Notifications class to easilly show notifications using custom made templates,
     /// or completely custom style if none of the templates are fitting for the current task.
     /// </summary>
-    public static class Notify
+    public class Notify : BaseScript
     {
         /// <summary>
         /// Show a custom notification above the minimap.
@@ -81,14 +81,48 @@ namespace vMenuClient
         /// <param name="message">Message to display.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public static void Custom(string message, bool blink = true, bool saveToBrief = true)
+        public static void Custom(string message, bool blink = true, bool saveToBrief = true, string type = "Custom")
         {
-            SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
-            foreach (var s in CitizenFX.Core.UI.Screen.StringToArray(message))
+            string notiftype = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_notification_type);
+            if (type == "death")
             {
-                AddTextComponentSubstringPlayerName(s);
+                    SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
+                    foreach (var s in CitizenFX.Core.UI.Screen.StringToArray(message))
+                    {
+                        AddTextComponentSubstringPlayerName(s);
+                    }
+                    DrawNotification(blink, saveToBrief);
             }
-            DrawNotification(blink, saveToBrief);
+            else
+            {
+                if (notiftype.ToLower() == "native")
+                {
+                    SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
+                    foreach (var s in CitizenFX.Core.UI.Screen.StringToArray(message))
+                    {
+                        AddTextComponentSubstringPlayerName(s);
+                    }
+                    DrawNotification(blink, saveToBrief);
+                }
+                else if (notiftype.ToLower() == "mosh")
+                {
+                    if (!((type.ToLower()=="alert")||(type.ToLower()=="error")||(type.ToLower()=="info")||(type.ToLower()=="success")))
+                    TriggerEvent("mosh_notify:notify", type, $"<span class=\"text-black\">{message}</span>", "info", "info", 5000);
+                }
+                else if (notiftype.ToLower() == "none")
+                {
+    
+                }
+                else
+                {
+                    SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
+                    foreach (var s in CitizenFX.Core.UI.Screen.StringToArray(message))
+                    {
+                        AddTextComponentSubstringPlayerName(s);
+                    }
+                    DrawNotification(blink, saveToBrief);
+                }
+            }
         }
 
         /// <summary>
@@ -99,7 +133,25 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Alert(string message, bool blink = true, bool saveToBrief = true)
         {
-            Custom("~y~~h~Alert~h~~s~: " + message, blink, saveToBrief);
+            string notiftype = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_notification_type);
+
+            if (notiftype.ToLower() == "native")
+            {
+                Custom("~y~~h~Alert~h~~s~: " + message, blink, saveToBrief, "alert");
+            }
+            else if (notiftype.ToLower() == "mosh")
+            {
+                TriggerEvent("mosh_notify:notify", "ALERT", $"<span class=\"text-black\">{message}</span>", "warning", "warning", 5000);
+
+            }
+            else if (notiftype.ToLower() == "none")
+            {
+
+            }
+            else
+            {
+                Custom("~y~~h~Alert~h~~s~: " + message, blink, saveToBrief, "alert");
+            }
         }
 
         /// <summary>
@@ -123,7 +175,25 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Error(string message, bool blink = true, bool saveToBrief = true)
         {
-            Custom("~r~~h~Error~h~~s~: " + message, blink, saveToBrief);
+            string notiftype = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_notification_type);
+
+            if (notiftype.ToLower() == "native")
+            {
+            Custom("~r~~h~Error~h~~s~: " + message, blink, saveToBrief, "error");
+            }
+            else if (notiftype.ToLower() == "mosh")
+            {
+                TriggerEvent("mosh_notify:notify", "ERROR", $"<span class=\"text-black\">{message}</span>", "error", "error", 5000);
+
+            }
+            else if (notiftype.ToLower() == "none")
+            {
+
+            }
+            else
+            {
+            Custom("~r~~h~Error~h~~s~: " + message, blink, saveToBrief, "error");
+            }
             Debug.Write("[vMenu] [ERROR] " + message + "\n");
         }
 
@@ -148,7 +218,25 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Info(string message, bool blink = true, bool saveToBrief = true)
         {
-            Custom("~b~~h~Info~h~~s~: " + message, blink, saveToBrief);
+            string notiftype = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_notification_type);
+
+            if (notiftype.ToLower() == "native")
+            {
+            Custom("~b~~h~Info~h~~s~: " + message, blink, saveToBrief, "info");       
+            }
+            else if (notiftype.ToLower() == "mosh")
+            {
+                TriggerEvent("mosh_notify:notify", "INFO", $"<span class=\"text-black\">{message}</span>", "info", "info", 5000);
+
+            }
+            else if (notiftype.ToLower() == "none")
+            {
+
+            }
+            else
+            {
+            Custom("~b~~h~Info~h~~s~: " + message, blink, saveToBrief, "info");
+            }
         }
 
         /// <summary>
@@ -159,7 +247,25 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Success(string message, bool blink = true, bool saveToBrief = true)
         {
-            Custom("~g~~h~Success~h~~s~: " + message, blink, saveToBrief);
+            string notiftype = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_notification_type);
+
+            if (notiftype.ToLower() == "native")
+            {
+            Custom("~g~~h~Success~h~~s~: " + message, blink, saveToBrief, "success");
+            }
+            else if (notiftype.ToLower() == "mosh")
+            {
+                TriggerEvent("mosh_notify:notify", "SUCCESS", $"<span class=\"text-black\">{message}</span>", "success", "success", 5000);
+
+            }
+            else if (notiftype.ToLower() == "none")
+            {
+
+            }
+            else
+            {
+            Custom("~g~~h~Success~h~~s~: " + message, blink, saveToBrief, "success");
+            }
         }
 
         /// <summary>

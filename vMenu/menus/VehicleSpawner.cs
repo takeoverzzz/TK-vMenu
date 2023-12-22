@@ -74,7 +74,7 @@ namespace vMenuClient.menus
                         var unavailableCarsBtn = new MenuItem("Unavailable Vehicles", "These addon vehicles are not currently being streamed (correctly) and are not able to be spawned.") { Label = "→→→" };
 
                         var ManuMenu = new Menu("Manufacturer List", "Choose your manufacturer");
-                        var ManuBtn = new MenuItem("Sort by Manufacturer", $"Find your car by manufacturers instead of scrolling through classes") { Label = "→→→" };
+                        var ManuBtn = new MenuItem("Sort by Manufacturer", $"Find your car by manufacturers instead of scrolling through classes.") { Label = "→→→" };
                         addonCarsMenu.AddMenuItem(ManuBtn);
                         MenuController.AddSubmenu(addonCarsMenu, ManuMenu);
                         MenuController.BindMenuItem(addonCarsMenu, ManuMenu, ManuBtn);
@@ -262,13 +262,13 @@ namespace vMenuClient.menus
                         for (var cat = 0; cat < 23; cat++)
                         {
                             var categoryMenu = new Menu("Addon Spawner", GetLabelText($"VEH_CLASS_{cat}"));
-                            var categoryBtn = new MenuItem(GetLabelText($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the {GetLabelText($"VEH_CLASS_{cat}")} class.") { Label = "→→→" };
+                            var categoryBtn = new MenuItem(GetLabelText($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the ~o~{GetLabelText($"VEH_CLASS_{cat}")} ~s~class.") { Label = "→→→" };
 
                             CaterMenu.AddMenuItem(categoryBtn);
 
                             if (!allowedCategories[cat])
                             {
-                                categoryBtn.Description = "This vehicle class is disabled by the server.";
+                                categoryBtn.Description = "This vehicle class is disabled by the server for everyone.";
                                 categoryBtn.Enabled = false;
                                 categoryBtn.LeftIcon = MenuItem.Icon.LOCK;
                                 categoryBtn.Label = "";
@@ -278,11 +278,12 @@ namespace vMenuClient.menus
                             foreach (KeyValuePair<string, uint> veh in modellist.Where(v => GetVehicleClassFromName(v.Value) == cat))
                             {
                                 string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(veh.Value));
-
                                 string name = localizedName != "NULL" ? localizedName : GetDisplayNameFromVehicleModel(veh.Value);
+                                string localizedMakeName = GetLabelText(GetMakeNameFromVehicleModel(veh.Value));
+                                string manuname = localizedMakeName != "NULL" ? localizedMakeName : GetMakeNameFromVehicleModel(veh.Value);
                                 name = name != "CARNOTFOUND" ? name : veh.Key;
 
-                                MenuItem carBtn = new MenuItem(name, $"Click to spawn {name}.")
+                                MenuItem carBtn = new MenuItem(name, $"Click to spawn the {manuname} {name}.")
                                 {
                                     Label = $"({veh.Key})",
                                     ItemData = veh.Key // store the model name in the button data.
@@ -340,7 +341,7 @@ namespace vMenuClient.menus
                 {
                     addonCarsBtn.Enabled = false;
                     addonCarsBtn.LeftIcon = MenuItem.Icon.LOCK;
-                    addonCarsBtn.Description = "The list containing all addon cars could not be loaded, is it configured properly?";
+                    addonCarsBtn.Description = "The list containing all addon vehicles could not be loaded, is it configured properly?";
                 }
             }
             else
@@ -482,7 +483,7 @@ namespace vMenuClient.menus
                 else
                 {
                     btn.LeftIcon = MenuItem.Icon.LOCK;
-                    btn.Description = "This category has been disabled by the server owner.";
+                    btn.Description = "This category has been disabled by the server owner for everyone.";
                     btn.Enabled = false;
                 }
 
@@ -563,7 +564,7 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                var vehBtn = new MenuItem(vehName, "This vehicle Has Been blocked by the server administration.")
+                                var vehBtn = new MenuItem(vehName, "This vehicle has been blocked by the server administration for everyone. Contact your server owner to unblock this vehicle.")
                                 {
                                     Enabled = false,
                                     Label = $"({vehModelName.ToLower()})",
@@ -609,7 +610,7 @@ namespace vMenuClient.menus
                         }
                         else
                         {
-                            var vehBtn = new MenuItem(vehName, "This vehicle Has Been blocked by the server administration.")
+                            var vehBtn = new MenuItem(vehName, "This vehicle has been blocked by the server administration for everyone. Contact your server owner to unblock this vehicle.")
                             {
                                 Enabled = false,
                                 Label = $"({vehModelName.ToLower()})",

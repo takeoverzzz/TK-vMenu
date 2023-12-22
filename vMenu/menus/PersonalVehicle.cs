@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using CitizenFX.Core;
@@ -233,6 +234,53 @@ namespace vMenuClient.menus
                     }
                 }
             };
+
+            // Personal Vehicle Command
+            RegisterCommand("pv", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+                TriggerEvent("chat:addSuggestion", "/pv", "Sets the vehicle you're currently driving as a Personal Vehicle.");
+                if (Game.PlayerPed.IsInVehicle())
+                {
+                    var veh = GetVehicle();
+                    if (veh != null && veh.Exists())
+                    {
+                        if (Game.PlayerPed == veh.Driver)
+                        {
+                            CurrentPersonalVehicle = veh;
+                            veh.PreviouslyOwnedByPlayer = true;
+                            veh.IsPersistent = true;
+                            if (EnableVehicleBlip && IsAllowed(Permission.PVAddBlip))
+                            {
+                                if (veh.AttachedBlip == null || !veh.AttachedBlip.Exists())
+                                {
+                                    veh.AttachBlip();
+                                }
+                                veh.AttachedBlip.Sprite = (BlipSprite)data.BlipInfo.GetBlipSpriteForVehicle(CurrentPersonalVehicle.Handle);
+                                veh.AttachedBlip.Name = "Personal Vehicle";
+                            }
+                            var name = GetLabelText(veh.DisplayName);
+                            if (string.IsNullOrEmpty(name) || name.ToLower() == "null")
+                            {
+                                name = veh.DisplayName;
+                            }
+                            setVehice.Label = $"Current Vehicle: {name}";
+                            MainMenu.RecreateMenus();
+                        }
+                        else
+                        {
+                            Notify.Error(CommonErrors.NeedToBeTheDriver);
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.NoVehicle);
+                    }
+                }
+                else
+                {
+                    Notify.Error(CommonErrors.NoVehicle);
+                }
+            }), false);
 
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>

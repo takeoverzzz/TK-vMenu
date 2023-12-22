@@ -29,12 +29,12 @@ namespace vMenuClient.menus
         public bool ShowCoordinates { get; private set; } = false;
         public bool HideHud { get; private set; } = false;
         public bool HideRadar { get; private set; } = false;
-        public bool ShowLocation { get; private set; } = UserDefaults.MiscShowLocation;
+        public bool ShowLocation { get; private set; } = UserDefaults.MiscShowLocation || vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_showlocation_on_default);
         public bool DeathNotifications { get; private set; } = UserDefaults.MiscDeathNotifications;
         public bool JoinQuitNotifications { get; private set; } = false;
         public bool LockCameraX { get; private set; } = false;
         public bool LockCameraY { get; private set; } = false;
-        public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
+        public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips || vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_showlocationblips_on_default);
         public bool ShowPlayerBlips { get; private set; } = true;
         public bool MiscShowOverheadNames { get; private set; } = true;
         public bool ShowVehicleModelDimensions { get; private set; } = false;
@@ -279,7 +279,7 @@ namespace vMenuClient.menus
 
                 var tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
                 var tpToCoord = new MenuItem("Teleport To Coords", "Enter x, y, z coordinates and you will be teleported to that location.");
-                var saveLocationBtn = new MenuItem("Save Teleport Location", "Adds your current location to the teleport locations menu and saves it on the server.");
+                var saveLocationBtn = new MenuItem("Save Teleport Location", "Adds your current location to the teleport locations menu and saves it on the server ~r~~h~(script restart required after adding new location(s)).");
                 teleportOptionsMenu.OnItemSelect += async (sender, item, index) =>
                 {
                     // Teleport to waypoint.
@@ -363,7 +363,7 @@ namespace vMenuClient.menus
                     teleportOptionsMenu.AddMenuItem(tpToCoord);
                 }
                 if (IsAllowed(Permission.MSTeleportLocations))
-                {
+                 {
                     teleportOptionsMenu.AddMenuItem(teleportMenuBtn);
 
                     MenuController.AddSubmenu(teleportOptionsMenu, teleportMenu);
@@ -372,30 +372,52 @@ namespace vMenuClient.menus
 
                     teleportMenu.OnMenuOpen += (sender) =>
                     {
-                        if (teleportMenu.Size != TpLocations.Count())
+                        var jsonFile2 = LoadResourceFile(GetCurrentResourceName(), "config/TeleportCategories.json");
+                        var data2 = JsonConvert.DeserializeObject<vMenuShared.ConfigManager.LocationsSubMenu>(jsonFile2);
+
+                        if (teleportMenu.Size != data2.teleports.Count())
                         {
                             teleportMenu.ClearMenuItems();
-                            foreach (var location in TpLocations)
+                            foreach (var location in data2.teleports)
                             {
-                                var x = Math.Round(location.coordinates.X, 2);
-                                var y = Math.Round(location.coordinates.Y, 2);
-                                var z = Math.Round(location.coordinates.Z, 2);
-                                var heading = Math.Round(location.heading, 2);
-                                var tpBtn = new MenuItem(location.name, $"Teleport to ~y~{location.name}~n~~s~x: ~y~{x}~n~~s~y: ~y~{y}~n~~s~z: ~y~{z}~n~~s~heading: ~y~{heading}") { ItemData = location };
-                                teleportMenu.AddMenuItem(tpBtn);
+                                Debug.WriteLine(location.JsonName);
+
+                                var jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/locations/" + location.JsonName);
+                                var data = JsonConvert.DeserializeObject<vMenuShared.ConfigManager.Locationsteleport>(jsonFile);
+                                Menu teleportSubMenu = new Menu(location.name, location.name);
+                                MenuItem teleportSubMenuBtn = new MenuItem(location.name, $"Teleport to ~b~{location.name}~w~, added by the server owner.") { Label = "→→→" };
+                                teleportMenu.AddMenuItem(teleportSubMenuBtn);
+
+                                
+                                foreach (var tplocations in data.teleports)
+                                {
+                                    var x = Math.Round(tplocations.coordinates.X, 2);
+                                    var y = Math.Round(tplocations.coordinates.Y, 2);
+                                    var z = Math.Round(tplocations.coordinates.Z, 2);
+                                    var heading = Math.Round(tplocations.heading, 2);
+                                    var tpBtn = new MenuItem(tplocations.name, $"Teleport to ~y~{tplocations.name}~n~~s~x: ~y~{x}~n~~s~y: ~y~{y}~n~~s~z: ~y~{z}~n~~s~heading: ~y~{heading}") { ItemData = tplocations };
+                                    teleportSubMenu.AddMenuItem(tpBtn);
+                                }
+
+                                if (teleportSubMenu.Size > 0)
+                                {
+                                    MenuController.AddSubmenu(teleportMenu, teleportSubMenu);
+                                    MenuController.BindMenuItem(teleportMenu, teleportSubMenu, teleportSubMenuBtn);
+                                }
+                                teleportSubMenu.OnItemSelect += async (sender, item, index) =>
+                                {
+                                    if (item.ItemData is vMenuShared.ConfigManager.TeleportLocation tl)
+                                    {
+                                        await TeleportToCoords(tl.coordinates, true);
+                                        SetEntityHeading(Game.PlayerPed.Handle, tl.heading);
+                                        SetGameplayCamRelativeHeading(0f);
+                                    }
+                                };
                             }
+
                         }
                     };
 
-                    teleportMenu.OnItemSelect += async (sender, item, index) =>
-                    {
-                        if (item.ItemData is vMenuShared.ConfigManager.TeleportLocation tl)
-                        {
-                            await TeleportToCoords(tl.coordinates, true);
-                            SetEntityHeading(Game.PlayerPed.Handle, tl.heading);
-                            SetGameplayCamRelativeHeading(0f);
-                        }
-                    };
 
                     if (IsAllowed(Permission.MSTeleportSaveLocation))
                     {

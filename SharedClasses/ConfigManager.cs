@@ -76,6 +76,37 @@ namespace vMenuShared
             vmenu_discord_small_image,
             vmenu_discord_small_image_text,
             vmenu_discord_large_image_text,
+
+            // DV Script
+            vmenu_enable_dv_command,
+            vmenu_dv_retries,
+            vmenu_dv_distance,
+            vmenu_freecam_toggle_key,
+
+            // notification
+            vmenu_notification_type,
+
+
+            // osd settings
+            vmenu_showlocationblips_on_default,
+            vmenu_showlocation_on_default,
+
+
+            // world related
+            vmenu_set_vehicle_density_multiplier,
+            vmenu_set_ped_density_multiplier,
+            vmenu_set_random_vehicle_density_multiplier,
+            vmenu_set_parked_vehicle_density_multiplier,
+            vmenu_set_scenario_ped_density_multiplier,
+            vmenu_set_garbage_trucks,
+            vmenu_set_random_boats,
+            vmenu_set_create_random_cops,
+            vmenu_set_create_random_cops_not_onscenarios,
+            vmenu_set_create_random_cops_on_scenarios,
+            vmenu_enable_npc_density,
+            vmenu_enable_replace_plates,
+
+            vmenu_enable_client_time_weather,
         }
 
         /// <summary>
@@ -163,25 +194,25 @@ namespace vMenuShared
         /// Gets the locations.json data.
         /// </summary>
         /// <returns></returns>
-        public static Locations GetLocations()
+        public static Blips GetBlips()
         {
-            var data = new Locations();
+            var data = new Blips();
 
-            var jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
+            var jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/blips.json");
             try
             {
                 if (string.IsNullOrEmpty(jsonFile))
                 {
 #if CLIENT
-                    vMenuClient.Notify.Error("The locations.json file is empty or does not exist, please tell the server owner to fix this.");
+                    vMenuClient.Notify.Error("The blips.json file is empty or does not exist, please tell the server owner to fix this.");
 #endif
 #if SERVER
-                    vMenuServer.DebugLog.Log("The locations.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
+                    vMenuServer.DebugLog.Log("The blips.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
 #endif
                 }
                 else
                 {
-                    data = JsonConvert.DeserializeObject<Locations>(jsonFile);
+                    data = JsonConvert.DeserializeObject<Blips>(jsonFile);
                 }
             }
             catch (Exception e)
@@ -195,14 +226,6 @@ namespace vMenuShared
             return data;
         }
 
-        /// <summary>
-        /// Gets just the teleport locations data from the locations.json.
-        /// </summary>
-        /// <returns></returns>
-        public static List<TeleportLocation> GetTeleportLocationsData()
-        {
-            return GetLocations().teleports;
-        }
 
         /// <summary>
         /// Gets just the blips data from the locations.json.
@@ -210,15 +233,18 @@ namespace vMenuShared
         /// <returns></returns>
         public static List<LocationBlip> GetLocationBlipsData()
         {
-            return GetLocations().blips;
+            return GetBlips().blips;
         }
 
         /// <summary>
         /// Struct used for deserializing json only.
         /// </summary>
-        public struct Locations
+        public struct Locationsteleport
         {
             public List<TeleportLocation> teleports;
+        }
+        public struct Blips
+        {
             public List<LocationBlip> blips;
         }
 
@@ -238,7 +264,35 @@ namespace vMenuShared
                 this.heading = heading;
             }
         }
+        public struct LocationsSubMenu
+        {
+            public List<TeleportLocationSubMenu> teleports;
+        }
+        public struct TeleportLocationSubMenu
+        {
+            public string JsonName;
+            public string name;
+            public TeleportLocationSubMenu(string JsonName, string name)
+            {
+                this.JsonName = JsonName;
+                this.name = name;
+            }
+        }
+        public struct PlateStruct
+        {
+            public string fileName;
+            public string normalName;
+            public string vMenuPlateName;
+            public string pattern;
 
+            public PlateStruct(string fileName, string normalName, string vMenuPlateName, string pattern)
+            {
+                this.fileName = fileName;
+                this.normalName = normalName;
+                this.vMenuPlateName = vMenuPlateName;
+                this.pattern = pattern;
+            }
+        }
         /// <summary>
         /// Location blip struct.
         /// </summary>

@@ -1,6 +1,6 @@
 {
 	"vehblips":{ // set vehicle map blip sprites https://docs.fivem.net/docs/game-references/blips/
 		"chr20": 825,
-		"cullinan": 820,
+		"cullinan": 820
 	}
 }

@@ -12,6 +12,16 @@ namespace vMenuShared
     {
         public enum Permission
         {
+			
+			 // Voice Chat
+            #region voice chat
+            VCMenu,
+            VCAll,
+            VCEnable,
+            VCShowSpeaker,
+            VCStaffChannel,
+            #endregion
+			
             // Global
             #region global
             Everything,
@@ -20,6 +30,8 @@ namespace vMenuShared
             NoClip,
             Staff,
             DumpLang,
+            DVAll,
+            Freecam,
             #endregion
 
             // Online Players
@@ -217,6 +229,10 @@ namespace vMenuShared
             WPSetAllAmmo,
             #endregion
 
+            #region world related options
+            WRNPCOptions,
+            #endregion
+
             //Weapons Permissions
             #region weapon specific permissions
             WPAPPistol,
@@ -377,15 +393,6 @@ namespace vMenuShared
             MSDevTools,
             #endregion
 
-            // Voice Chat
-            #region voice chat
-            VCMenu,
-            VCAll,
-            VCEnable,
-            VCShowSpeaker,
-            VCStaffChannel,
-            #endregion
-
             // Plugin Menu
             #region plugin menu
             PNMenu,
@@ -402,6 +409,7 @@ namespace vMenuShared
             // ResetIndex Permission
             ResetIndex,
             #endregion
+
 
         }
         public static Dictionary<Permission, bool> Permissions { get; private set; } = new Dictionary<Permission, bool>();
@@ -594,7 +602,6 @@ namespace vMenuShared
             // Also tell the client to do the addons setup.
             player.TriggerEvent("vMenu:SetAddons");
             player.TriggerEvent("vMenu:SetExtras");
-            player.TriggerEvent("vMenu:UpdateTeleportLocations", Newtonsoft.Json.JsonConvert.SerializeObject(ConfigManager.GetTeleportLocationsData()));
         }
 #endif
 #if CLIENT
@@ -662,9 +669,6 @@ namespace vMenuShared
                 case "MS":
                     prefix += "MiscSettings";
                     break;
-                case "VC":
-                    prefix += "VoiceChat";
-                    break;
                 case "TP":
                     prefix += "TeleportOptions";
                     break;
@@ -676,6 +680,12 @@ namespace vMenuShared
                     break;
                 case "EC":
                     prefix += "EnhancedCamera";
+                    break;
+                case "WR":
+                    prefix += "WorldRelated";
+                    break;
+					case "VC":
+                    prefix += "VoiceChat";
                     break;
                 default:
                     return prefix + name;

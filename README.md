@@ -1,5 +1,5 @@
 # TK-vMenu
-The vMenu for takeoverz framework and other affiliated servers. All actions are subject to change.
+The vMenu for Project Fairness \ takeoverz and other affiliated servers. All actions are subject to change.
 
 # Description
 The original vMenu was lacking on options and new content. I made this version as a way for people to still get the latest updates, while of course, adding new things so it feels more like the vMenu on other servers (such as RSM, Impulse99, etc) while also improving upon the original.
@@ -10,7 +10,7 @@ The original vMenu was lacking on options and new content. I made this version a
 - This release is also based on the v3.6.0 release of vMenu. We had to do a whole bunch of porting from our v3.5.1 pre-release into this.
 
 # What's New
-- Chameleon Color by Wildbrick142 - [Download Chameleon Colors here](https://cdn.discordapp.com/attachments/1099903046701559828/1102708906234478712/pzn_chameleoncolor.7z), [Source](https://www.gta5-mods.com/misc/chameleon-paint-add-on)
+- Chameleon Color by Wildbrick142 - [Download Chameleon Colors](https://discord.gg/D7cVc8TzPN) [here](https://discord.com/channels/948321761429184584/1055750916080422922/1089373135331151872), [Source](https://www.gta5-mods.com/misc/chameleon-paint-add-on)
 - Content Updated up to v2802 & v2944
 - Mosh_Notify embedded Support for vMenu's NoClip - [Download Mosh_Notify here](https://forum.cfx.re/t/release-free-mosh-notify-fivem-custom-notifications-with-loadbar/2614951)
 - Los Santos Tuners goodies such as Vehicle Stance and Drift Tires (it's useless since we have vStancer and Handling Editor, but hey, it works)
@@ -32,10 +32,14 @@ The original vMenu was lacking on options and new content. I made this version a
 - Changed vMenu toggle and noclip to RegisterKeyMapping so it can now be changed within key binds in settings 
 
 --------
-# Developers
-- PF-Labs
-- TK
+# Translations
+If you want to help out provide translations to vMenu, you can [click here](https://github.com/ProjectFairnessLabs/GroupTranslationDB) and do a pull request!
 
+--------
+# Developers
+- Ribbitpoison
+- RickyB505
+- TK
 
 # Feature Suggestions
 - TayMcKenzieNZ
@@ -45,7 +49,7 @@ The original vMenu was lacking on options and new content. I made this version a
 - Vespura
 --------
 # Discord
-Please join [our Discord server](https://discord.gg/SN6svnVpWv) if you want support in regards to this menu.
+Please join [our Discord server](https://discord.gg/EchnCe4gBb) if you want support in regards to this menu.
 
 --------
 # Download & Installation & Permissions

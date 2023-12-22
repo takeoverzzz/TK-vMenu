@@ -345,9 +345,7 @@ namespace vMenuClient
             set { SetSavedSettingsBool("kbPointKeys", value); }
         }
         #endregion
-        #endregion
-
-        #region Voice Chat Settings
+		 #region Voice Chat Settings
         public static bool VoiceChatEnabled
         {
             get { return GetSettingsBool("voiceChatEnabled"); }
@@ -371,6 +369,7 @@ namespace vMenuClient
             get { return GetSettingsBool("voiceChatShowVoiceStatus"); }
             set { SetSavedSettingsBool("voiceChatShowVoiceStatus", value); }
         }
+        #endregion
         #endregion
 
         #region Player Appearance
@@ -422,8 +421,6 @@ namespace vMenuClient
                     "vehicleSpawnerSpawnInside" or
                     "vehicleSpawnerReplacePrevious" or
                     "neverWanted" or
-                    "voiceChatShowSpeaker" or
-                    "voiceChatEnabled" or
                     "autoEquipParachuteWhenInPlane" or
                     "miscRestorePlayerAppearance" or
                     "miscRestorePlayerWeapons" or
@@ -658,20 +655,6 @@ namespace vMenuClient
                 prefs.Add("vehicleSpawnerSpawnInside", VehicleSpawnerSpawnInside);
             }
 
-            if (MainMenu.VoiceChatSettingsMenu != null)
-            {
-                VoiceChatEnabled = MainMenu.VoiceChatSettingsMenu.EnableVoicechat;
-                prefs.Add("voiceChatEnabled", VoiceChatEnabled);
-
-                VoiceChatProximity = MainMenu.VoiceChatSettingsMenu.currentProximity;
-                prefs.Add("voiceChatProximity", VoiceChatProximity);
-
-                ShowCurrentSpeaker = MainMenu.VoiceChatSettingsMenu.ShowCurrentSpeaker;
-                prefs.Add("voiceChatShowSpeaker", ShowCurrentSpeaker);
-
-                ShowVoiceStatus = MainMenu.VoiceChatSettingsMenu.ShowVoiceStatus;
-                prefs.Add("voiceChatShowVoiceStatus", ShowVoiceStatus);
-            }
 
             if (MainMenu.WeaponOptionsMenu != null)
             {

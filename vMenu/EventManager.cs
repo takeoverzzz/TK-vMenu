@@ -40,7 +40,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetPermissions", new Action<string>(MainMenu.SetPermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action<string>(KillMe));
-            EventHandlers.Add("vMenu:Notify", new Action<string>(NotifyPlayer));
+            EventHandlers.Add("vMenu:Notify", new Action<string, string>(NotifyPlayer));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
@@ -50,7 +50,6 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:GetOutOfCar", new Action<int, int>(GetOutOfCar));
             EventHandlers.Add("vMenu:SetDriftSuspension", new Action<int, bool>(SetDriftSuspension));
             EventHandlers.Add("vMenu:PrivateMessage", new Action<string, string>(PrivateMessage));
-            EventHandlers.Add("vMenu:UpdateTeleportLocations", new Action<string>(UpdateTeleportLocations));
 
             if (!((!GetSettingsBool(Setting.vmenu_enable_weather_sync))||( false )))
             {
@@ -340,9 +339,29 @@ namespace vMenuClient
         /// Used by events triggered from the server to notify a user.
         /// </summary>
         /// <param name="message"></param>
-        private void NotifyPlayer(string message)
+        private void NotifyPlayer(string message, string type)
         {
-            Notify.Custom(message, true, true);
+            if (type.ToLower() == "alert")
+            {
+                 Notify.Alert(message, true, true);
+            }
+            else if (type.ToLower() == "error") 
+            {
+                 Notify.Error(message, true, true);
+            }
+            else if (type.ToLower() == "info") 
+            {
+                 Notify.Info(message, true, true);
+            }
+            else if (type.ToLower() == "success") 
+            {
+                 Notify.Success(message, true, true);
+            }
+            else
+            {
+                 Notify.Custom(message, true, true, type);
+            }
+
         }
 
         /// <summary>
@@ -467,16 +486,6 @@ namespace vMenuClient
             PlayerAppearance.ClothingAnimationType = -1;
             await Delay(100);
             PlayerAppearance.ClothingAnimationType = backup;
-        }
-
-        /// <summary>
-        /// Updates the teleports locations data from the server side locations.json, because that doesn't update client side on change.
-        /// </summary>
-        /// <param name="jsonData"></param>
-        private void UpdateTeleportLocations(string jsonData)
-        {
-            TeleportOptions.TpLocations = JsonConvert.DeserializeObject<List<vMenuShared.ConfigManager.TeleportLocation>>(jsonData);
-            MiscSettings.TpLocations = JsonConvert.DeserializeObject<List<vMenuShared.ConfigManager.TeleportLocation>>(jsonData);
         }
     }
 }

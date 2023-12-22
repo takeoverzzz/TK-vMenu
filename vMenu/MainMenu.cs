@@ -44,13 +44,14 @@ namespace vMenuClient
         public static TeleportOptions TeleportOptionsMenu { get; private set; }
         public static TimeOptions TimeOptionsMenu { get; private set; }
         public static WeatherOptions WeatherOptionsMenu { get; private set; }
+        public static NPCDensityMenu DensityOptions { get; private set; }
         public static WeaponOptions WeaponOptionsMenu { get; private set; }
         public static WeaponLoadouts WeaponLoadoutsMenu { get; private set; }
         public static Recording RecordingMenu { get; private set; }
         public static EnhancedCamera EnhancedCameraMenu { get; private set; }
+		public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static PluginSettings PluginSettingsMenu { get; private set; }
         public static MiscSettings MiscSettingsMenu { get; private set; }
-        public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
         public static bool NoClipEnabled { get { return NoClip.IsNoclipActive(); } set { NoClip.SetNoclipActive(value); } }
         public static IPlayerList PlayersList;
@@ -130,6 +131,59 @@ namespace vMenuClient
             }
             #endregion
 
+            #region keymapping stuff
+            RegisterCommand($"{GetSettingsString(Setting.vmenu_individual_server_id)}vMenu:NoClip", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+               {
+                    if ( IsAllowed(Permission.NoClip) )
+                    {
+                        if (Game.PlayerPed.IsInVehicle())
+                        {
+                            var veh = GetVehicle();
+                            if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
+                            {
+                                NoClipEnabled = !NoClipEnabled;
+                            }
+                            else
+                            {
+                                NoClipEnabled = false;
+                                Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
+                            }
+                        }
+                        else
+                        {
+                            NoClipEnabled = !NoClipEnabled;
+                        }
+                    }
+               }), false);
+
+            RegisterCommand($"{GetSettingsString(Setting.vmenu_individual_server_id)}vMenu:toggle", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+               {
+                   if (vMenuEnabled)
+                   {
+                       if (!MenuController.IsAnyMenuOpen())
+                       {
+                           Menu.OpenMenu();
+                       }
+                       else
+                       {
+                           MenuController.CloseAllMenus();
+                       }
+                   }
+               }), false);
+            if (!(GetSettingsString(Setting.vmenu_menu_toggle_key) == null))
+            {
+                vMenuKey = GetSettingsString(Setting.vmenu_menu_toggle_key);
+            }
+            else
+            {
+                vMenuKey = "M";
+            }
+
+            RegisterKeyMapping($"{GetSettingsString(Setting.vmenu_individual_server_id)}vMenu:NoClip", "vMenu NoClip Toggle Button", "keyboard", NoClipKey);
+
+            RegisterKeyMapping($"{GetSettingsString(Setting.vmenu_individual_server_id)}vMenu:toggle", "vMenu Toggle Button", "keyboard", vMenuKey);
+            #endregion
+            
             if (EnableExperimentalFeatures)
             {
                 RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
@@ -153,6 +207,155 @@ namespace vMenuClient
                 {
                     SetNuiFocus(false, false);
                 }), false);
+            }
+
+
+            if (GetSettingsBool(Setting.vmenu_enable_dv_command))
+            {
+                RegisterCommand("dv", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+                {
+                    var player = Game.PlayerPed.Handle;
+                    if (DoesEntityExist(player) && !IsEntityDead(player))
+                    {
+                        var position = GetEntityCoords(player, true);
+                        if (IsPedSittingInAnyVehicle(player))
+                        {
+                            var veh = GetVehicle();
+                            if ( GetPedInVehicleSeat(veh.Handle, -1) == player)
+                            {
+                                DelVeh(veh, 5, veh.Handle);
+                            }
+                            else
+                            {
+                                Notify.Error("You must be in the driver's seat to delete this vehicle!");
+                                if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.pfvmenu_moshnotify_setting))
+                                {
+                                    //TriggerEvent("mosh_notify:notify", "ERROR", "<span class=\"text-white\">You must be in the driver's seat to delete this vehicle!</span>", "darkred", "error", 5000);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var inFrontOfPlayer = GetOffsetFromEntityInWorldCoords(player, (float)0.0, (float)GetSettingsFloat(Setting.vmenu_dv_distance), (float)0.0);
+                            var vehicle = GetVehInDirection(player, position, inFrontOfPlayer);
+                            if (!(vehicle == 0))
+                            {
+                                Vehicle veh = (Vehicle)Entity.FromHandle(vehicle);
+                                DelVeh(veh, GetSettingsInt(Setting.vmenu_dv_retries), vehicle);
+                            }
+                            else
+                            {
+                                Notify.Error("No vehicle found. Maybe it's not close to you?");
+                                if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.pfvmenu_moshnotify_setting))
+                                {
+                                    //TriggerEvent("mosh_notify:notify", "ERROR", "<span class=\"text-white\">No vehicle found. Maybe it's not close to you?</span>", "darkred", "error", 5000);
+                                }
+                            }
+                        }
+                    } 
+                }), false);
+                TriggerEvent("chat:addSuggestion", "/dv", "Deletes the vehicle you're sat in, or standing next to.");
+            }
+
+            RegisterCommand("dvall", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+            
+
+                if (IsAllowed(Permission.DVAll))
+                {
+                    TriggerServerEvent("vMenu:DelAllVehServ");
+                }
+                else
+                {
+                    Notify.Error("You do NOT have permission to use this command.");
+                    if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.pfvmenu_moshnotify_setting))
+                    {
+                        //TriggerEvent("mosh_notify:notify", "ERROR", "<span class=\"text-white\">You do NOT have permission to use this command.</span>", "darkred", "error", 5000);
+                    }
+                }
+            }), false);
+
+            
+            TriggerEvent("chat:addSuggestion", "/dvall", "Deletes all vehicles");
+            static async void DelVeh(Vehicle veh, int maxtimeout, int vehicle)
+            {
+                var timeout = 0;
+                if (NetworkHasControlOfEntity(vehicle))
+                {
+                    veh.Delete();
+                }
+                if ( DoesEntityExist(vehicle) && timeout < maxtimeout)            
+                {
+                    while (DoesEntityExist(vehicle) && timeout < maxtimeout)
+                    {
+                        if (IsPedAPlayer(GetPedInVehicleSeat(vehicle, -1)))
+                        {
+                            Notify.Error("You can't delete this vehicle, someone else is driving it!");
+                            if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.pfvmenu_moshnotify_setting))
+                            {
+                                //TriggerEvent("mosh_notify:notify", "ERROR", "<span class=\"text-white\">You can't delete this vehicle, someone else is driving it!</span>", "darkred", "error", 5000);
+                            }
+                            return;
+                        }
+                        NetworkRequestControlOfEntity(vehicle);
+                        var retry = 0;
+                        while (!(NetworkHasControlOfEntity(vehicle) || (retry > 10)))
+                        {
+                            retry++;                       
+                            await Delay(10);
+                            NetworkRequestControlOfEntity(vehicle);
+                        }
+
+                        var vehval = (Vehicle)Entity.FromHandle(vehicle);
+                        vehval.Delete();
+                        if (!DoesEntityExist(vehicle))
+                        {
+                           Notify.Success("The vehicle has been deleted!");
+                           if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.pfvmenu_moshnotify_setting))
+                           {
+                               //TriggerEvent("mosh_notify:notify", "SUCCESS", "<span class=\"text-white\">The vehicle has been deleted!</span>", "success", "success", 5000);
+                           }
+                        }
+                        timeout++;
+                        await Delay(1000);
+                        if ( DoesEntityExist(vehicle) && timeout == maxtimeout -1)            
+                        {
+                           Notify.Error($"Failed to delete vehicle, after {maxtimeout} retries.");
+                           if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.pfvmenu_moshnotify_setting))
+                           {
+                               //TriggerEvent("mosh_notify:notify", "ERROR", $"<span class=\"text-white\">Failed to delete vehicle, after {maxtimeout} retries.</span>", "darkred", "error", 5000);
+                           }
+                        }
+                    }
+                }
+                else
+                {
+                    Notify.Success("The vehicle has been deleted!");
+                    if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.pfvmenu_moshnotify_setting))
+                    {
+                        //TriggerEvent("mosh_notify:notify", "SUCCESS", "<span class=\"text-white\">The vehicle has been deleted!</span>", "success", "success", 5000);
+                    }
+                }
+                return;
+            }
+
+            static int GetVehInDirection(int ped, Vector3 pos, Vector3 posinfront)
+            {
+                var ray = StartShapeTestCapsule(pos.X, pos.Y, pos.Z, posinfront.X, posinfront.Y, posinfront.Z, (float)5.0, (int)10, ped, (int)7);
+                bool hit = false;
+                Vector3 endCoords = Vector3.Zero;
+                Vector3 surfaceNormal = Vector3.Zero;
+                var vehicle = 0;
+                GetShapeTestResult(ray, ref hit, ref endCoords, ref surfaceNormal, ref vehicle);
+                if (IsEntityAVehicle(vehicle))
+                {
+
+                    return vehicle; 
+                }
+                else
+                {
+                    return 0;
+                }
             }
 
             RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
@@ -209,11 +412,7 @@ namespace vMenuClient
                                 var type = 0; // 0 = string, 1 = float, 2 = int.
                                 if (kvp.StartsWith("settings_"))
                                 {
-                                    if (kvp == "settings_voiceChatProximity") // float
-                                    {
-                                        type = 1;
-                                    }
-                                    else if (kvp == "settings_clothingAnimationType") // int
+                                    if (kvp == "settings_clothingAnimationType") // int
                                     {
                                         type = 2;
                                     }
@@ -503,56 +702,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task OnTick()
         {
-            RegisterCommand($"{GetSettingsString(Setting.vmenu_individual_server_id)}vMenu:NoClip", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
-               {
-                    if ( IsAllowed(Permission.NoClip) )
-                    {
-                        if (Game.PlayerPed.IsInVehicle())
-                        {
-                            var veh = GetVehicle();
-                            if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
-                            {
-                                NoClipEnabled = !NoClipEnabled;
-                            }
-                            else
-                            {
-                                NoClipEnabled = false;
-                                Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
-                            }
-                        }
-                        else
-                        {
-                            NoClipEnabled = !NoClipEnabled;
-                        }
-                    }
-               }), false);
 
-            RegisterCommand($"{GetSettingsString(Setting.vmenu_individual_server_id)}vMenu:toggle", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
-               {
-                   if (vMenuEnabled)
-                   {
-                       if (!MenuController.IsAnyMenuOpen())
-                       {
-                           Menu.OpenMenu();
-                       }
-                       else
-                       {
-                           MenuController.CloseAllMenus();
-                       }
-                   }
-               }), false);
-            if (!(GetSettingsString(Setting.vmenu_menu_toggle_key) == null))
-            {
-                vMenuKey = GetSettingsString(Setting.vmenu_menu_toggle_key);
-            }
-            else
-            {
-                vMenuKey = "M";
-            }
-
-            RegisterKeyMapping($"{GetSettingsString(Setting.vmenu_individual_server_id)}vMenu:NoClip", "vMenu NoClip Toggle Button", "keyboard", NoClipKey);
-
-            RegisterKeyMapping($"{GetSettingsString(Setting.vmenu_individual_server_id)}vMenu:toggle", "vMenu Toggle Button", "keyboard", vMenuKey);
             // If the setup (permissions) is done, and it's not the first tick, then do this:
             if (ConfigOptionsSetupComplete)
             {
@@ -686,19 +836,19 @@ namespace vMenuClient
             Menu.AddMenuItem(vehicleSubmenuBtn);
             // Add the vehicle options Menu.
 
-
             var worldSubmenuBtn = new MenuItem("World Related Options", "Open this submenu for world related subcategories.") { Label = "→→→" };
-            Menu.AddMenuItem(worldSubmenuBtn);
-
+            if (GetSettingsBool(Setting.vmenu_enable_client_time_weather))
             {
-                var menu2 = PlayerTimeWeatherOptionsMenu.GetMenu();
-                var button2 = new MenuItem("Time & Weather Options", "Change all time & weather related options here.")
+                Menu.AddMenuItem(worldSubmenuBtn);
                 {
-                    Label = "→→→"
-                };
-                AddMenu(Menu, menu2, button2);
+                    var menu2 = PlayerTimeWeatherOptionsMenu.GetMenu();
+                    var button2 = new MenuItem("Time & Weather Options", "Change all time & weather related options here.")
+                    {
+                        Label = "→→→"
+                    };
+                    AddMenu(Menu, menu2, button2);
+                }
             }
-
             // Add Teleport Menu.
             if (IsAllowed(Permission.TPMenu))
             {
@@ -712,16 +862,6 @@ namespace vMenuClient
             }
 
 
-            // Add Voice Chat Menu.
-            if (IsAllowed(Permission.VCMenu))
-            {
-                var menu = VoiceChatSettingsMenu.GetMenu();
-                var button = new MenuItem("Voice Chat Settings", "Change Voice Chat options here.")
-                {
-                    Label = "→→→"
-                };
-                AddMenu(Menu, menu, button);
-            }
 
             {
                 var menu = RecordingMenu.GetMenu();
@@ -741,6 +881,18 @@ namespace vMenuClient
             {
                 var menu = EnhancedCameraMenu.GetMenu();
                 var button = new MenuItem("Enhanced Camera", "Opens the enhanced camera menu.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(Menu, menu, button);
+            }
+			
+			 // Add Voice Chat Menu.
+            if (IsAllowed(Permission.VCMenu))
+            {
+                VoiceChatSettingsMenu = new VoiceChat();
+                var menu = VoiceChatSettingsMenu.GetMenu();
+                var button = new MenuItem("Voice Chat Settings", "Change Voice Chat options here.")
                 {
                     Label = "→→→"
                 };
@@ -1004,6 +1156,27 @@ namespace vMenuClient
                 AddMenu(WorldSubmenu, menu, button);
             }
 
+            if (IsAllowed(Permission.WRNPCOptions, true) && GetSettingsBool(Setting.vmenu_enable_npc_density)) 
+            {
+                DensityOptions = new NPCDensityMenu();
+                var menu = DensityOptions.GetMenu();
+                var button = new MenuItem("NPC Density Options (Experimental)", "Change all NPC Density related options here.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(WorldSubmenu, menu, button);
+                WorldSubmenu.OnItemSelect += (sender, item, index) =>
+                {
+                    if (item == button)
+                    {
+                        PlayersList.RequestPlayerList();
+
+                        DensityOptions.RefreshMenu();
+                        menu.RefreshIndex();
+                    }
+                };
+            }
+
             // Add the weapons menu.
             if (IsAllowed(Permission.WPMenu))
             {
@@ -1064,17 +1237,6 @@ namespace vMenuClient
             }
 
 
-            // Add Voice Chat Menu.
-            if (IsAllowed(Permission.VCMenu))
-            {
-                VoiceChatSettingsMenu = new VoiceChat();
-                var menu = VoiceChatSettingsMenu.GetMenu();
-                var button = new MenuItem("Voice Chat Settings", "Change Voice Chat options here.")
-                {
-                    Label = "→→→"
-                };
-                AddMenu(Menu, menu, button);
-            }
 
             {
                 RecordingMenu = new Recording();
@@ -1096,6 +1258,18 @@ namespace vMenuClient
                 EnhancedCameraMenu = new EnhancedCamera();
                 var menu = EnhancedCameraMenu.GetMenu();
                 var button = new MenuItem("Enhanced Camera", "Opens the enhanced camera menu.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(Menu, menu, button);
+            }
+			
+			 // Add Voice Chat Menu.
+            if (IsAllowed(Permission.VCMenu))
+            {
+                VoiceChatSettingsMenu = new VoiceChat();
+                var menu = VoiceChatSettingsMenu.GetMenu();
+                var button = new MenuItem("Voice Chat Settings", "Change Voice Chat options here.")
                 {
                     Label = "→→→"
                 };

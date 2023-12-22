@@ -1,0 +1,14 @@
+{
+  "teleports": [
+    {
+    "name": "example1",
+    "JsonName":"example1.json"
+    },
+    {
+    "name": "example2",
+    "JsonName":"example2.json"
+    }
+
+  ],
+
+}

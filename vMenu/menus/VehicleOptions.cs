@@ -7,6 +7,8 @@ using CitizenFX.Core;
 
 using MenuAPI;
 
+using Newtonsoft.Json;
+
 using vMenuClient.data;
 
 using static CitizenFX.Core.Native.API;
@@ -74,6 +76,12 @@ namespace vMenuClient.menus
         private static readonly LanguageManager Lm = new LanguageManager();
 
         private Dictionary<MenuItem, int> vehicleExtras = new Dictionary<MenuItem, int>();
+        private string plate01;
+        private string plate05;
+        private string plate06;
+        private string plate04;
+        private string plate03;
+        private string plate02;
         #endregion
 
         #region CreateMenu()
@@ -194,8 +202,92 @@ namespace vMenuClient.menus
             var dirtlevel = new List<string> { "No Dirt", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
             var setDirtLevel = new MenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ " +
                 "to apply the selected level.");
-            var licensePlates = new List<string> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"),
-                GetLabelText("CMOD_PLA_4"), "North Yankton" };
+
+                var PlateList = new Dictionary<int, string>() 
+                {
+                    {0, "plate01"},
+                    {1, "plate02"},
+                    {2, "plate03"},
+                    {3, "plate04"},
+                    {4, "plate05"},
+                    {5, "yankton_plate"},
+                };
+                foreach ( var Plates in new Dictionary<int, string>(PlateList))
+                {
+                    var stuff = GetConvar("vmenu_plate_override_"+Plates.Value, "false");
+                    if (!(stuff == "false" || stuff == null || stuff == "") )
+                    {
+                        var data2 = JsonConvert.DeserializeObject<vMenuShared.ConfigManager.PlateStruct>(stuff);
+                        if (Plates.Key == 0)
+                        {
+                            if (!(data2.vMenuPlateName == "" || data2.vMenuPlateName == null))
+                            {
+                                plate01 = data2.vMenuPlateName;
+                            }
+                            else
+                            {
+                                plate01 = GetLabelText("CMOD_PLA_0");                             
+                            }
+                        }
+                        else if (Plates.Key == 1)
+                        {
+                            if (!(data2.vMenuPlateName == "" || data2.vMenuPlateName == null))
+                            {
+                                plate02 = data2.vMenuPlateName;                             
+                            }
+                            else
+                            {
+                                plate02 = GetLabelText("CMOD_PLA_1");                             
+                            }
+                        }
+                        else if (Plates.Key == 2)
+                        {
+                            if (!(data2.vMenuPlateName == "" || data2.vMenuPlateName == null))
+                            {
+                                plate03 = data2.vMenuPlateName;                             
+                            }
+                            else
+                            {
+                                plate03 = GetLabelText("CMOD_PLA_2");                             
+                            }
+                        }
+                        else if (Plates.Key == 3)
+                        {
+                            if (!(data2.vMenuPlateName == "" || data2.vMenuPlateName == null))
+                            {
+                                plate04 = data2.vMenuPlateName;                             
+                            }
+                            else
+                            {
+                                plate04 = GetLabelText("CMOD_PLA_3");                             
+                            }
+                        }
+                        else if (Plates.Key == 4)
+                        {
+                            if (!(data2.vMenuPlateName == "" || data2.vMenuPlateName == null))
+                            {
+                                plate05 = data2.vMenuPlateName;                             
+                            }
+                            else
+                            {
+                                plate05 = GetLabelText("CMOD_PLA_4");                             
+                            }
+                        }
+                        else if (Plates.Key == 5)
+                        {
+                            if (!(data2.vMenuPlateName == "" || data2.vMenuPlateName == null))
+                            {
+                                plate06 = data2.vMenuPlateName;                             
+                            }
+                            else
+                            {
+                                plate06 = "North Yankton";                             
+                            }
+                        }
+                    }
+                }
+
+            var licensePlates = new List<string> { plate01, plate02, plate03, plate04, plate05, plate06 };
             var setLicensePlateType = new MenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply " +
                 "it to your vehicle.");
             var torqueMultiplierList = new List<string> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };

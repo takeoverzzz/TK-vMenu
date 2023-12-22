@@ -23,8 +23,8 @@ namespace vMenuClient
 
         public struct PedTattoos
         {
-            public List<KeyValuePair<string, string>> TorsoTattoos;
             public List<KeyValuePair<string, string>> HeadTattoos;
+            public List<KeyValuePair<string, string>> TorsoTattoos;
             public List<KeyValuePair<string, string>> LeftArmTattoos;
             public List<KeyValuePair<string, string>> RightArmTattoos;
             public List<KeyValuePair<string, string>> LeftLegTattoos;
